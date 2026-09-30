@@ -24,7 +24,7 @@ input,button,select{font:inherit}input[type=text],input[type=password],input[typ
 <main id="app"></main>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=localStorage.darkMode==="true";
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=localStorage.darkMode==="true",notifyEnabled=false;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const unlocked=()=>!!PW;
 async function api(b){
@@ -33,17 +33,26 @@ async function api(b){
   }catch(e){if(e==="pw"||e==="mail"||e==="kv")throw e;online=false;throw"net"}
 }
 async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true}catch{online=false}render()}
-async function act(b){try{await api(b)}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"メール送信に失敗(設定を確認)")}render()}
+async function act(b){try{await api(b);if(b.op==="check")showNotify("チェック更新","チェック状態が更新されたよ")}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"メール送信に失敗(設定を確認)")}render()}
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 async function autoNotify(){ // 連携ページを開いている間、期限を過ぎたら自動送信
   if(!unlocked())return;const today=new Date().toISOString().slice(0,10);
   for(const it of S.items)if(it.type==="hw"&&it.due&&it.due<today&&!it.notified&&notNames(it).length&&online)await act({op:"notify",id:it.id,names:notNames(it)});
 }
+async function requestNotify(){
+  if(!("Notification"in window)){alert("このブラウザは通知に対応してないよ");return}
+  if(Notification.permission==="granted"){notifyEnabled=true;alert("通知オン！")}
+  else if(Notification.permission!=="denied"){const p=await Notification.requestPermission();if(p==="granted"){notifyEnabled=true;alert("通知オン！")}}
+  else alert("通知が拒否されてるよ。ブラウザの設定で変えてね");
+}
+function showNotify(title,body){
+  if(notifyEnabled&&Notification.permission==="granted")new Notification(title,{body});
+}
 function card(it){
   const done=Object.keys(it.checks).length,p=Math.round(done/R.length*100),un=notNames(it);
   const lbl=it.type==="hw"?["提出済","未提出"]:["持った","忘れ"];
   let h=`<div class="card"><div class="row" data-o="${it.id}" style="cursor:pointer"><div class="grow"><b>${esc(it.title)}</b>
-   <div class="m">${it.assigned?"出た日 "+it.assigned+" ・ ":""}${it.due?"期限 "+it.due+" ・ ":""}${lbl[0]} ${done}/${R.length}${un.length?` ・ <span class="ng">${lbl[1]} ${un.length}人</span>`:` ・ <span class="ok">全員OK🎉</span>`}${it.notified?" ・ 📧送信済":""}</div></div><span>${open[it.id]?"▲":"▼"}</span></div>
+   <div class="m">${it.assigned?"📅 出た日: "+it.assigned+"  | ":""}${it.due?"⏰ 期限: "+it.due+"  | ":""}${lbl[0]} ${done}/${R.length}${un.length?`  | <span class="ng">${lbl[1]} ${un.length}人</span>`:`  | <span class="ok">全員OK🎉</span>`}${it.notified?"  | 📧送信済":""}</div></div><span>${open[it.id]?"▲":"▼"}</span></div>
    <div class="bar"><i style="width:${p}%"></i></div>`;
   if(open[it.id]){
     h+=`<div class="row" style="margin-top:8px"><label class="m"><input type="checkbox" id="only" ${only?"checked":""}> ${lbl[1]}だけ表示</label></div><div class="list">`;
@@ -65,7 +74,7 @@ function render(){
     <input type="date" id="as" placeholder="出た日">
     <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
     <div class="card"><div class="m">${isTeacher?"先生モード":"期限を過ぎた宿題は、このページを開いている間に未提出者が先生へ自動送信されるよ。各項目の「📧」で手動送信もできる。"}</div>
-    <div class="row" style="margin-top:8px;gap:6px"><button class="btn g" id="lock">🔒 ロックする</button><button class="btn" id="theme">${darkMode?"☀️ ライト":"🌙 ダーク"}</button></div></div>`+S.items.map(card).join("");
+    <div class="row" style="margin-top:8px;gap:6px"><button class="btn g" id="lock">🔒 ロックする</button><button class="btn" id="theme">${darkMode?"☀️ ライト":"🌙 ダーク"}</button><button class="btn" id="notify">🔔 通知をオン</button></div></div>`+S.items.map(card).join("");
   else{const l=S.items.filter(x=>x.type===tab);h=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
   $("#app").innerHTML=h;
   if(darkMode)document.documentElement.style.setProperty('--bg','#14161c'),document.documentElement.style.setProperty('--c','#1e2129'),document.documentElement.style.setProperty('--t','#eee'),document.documentElement.style.setProperty('--m','#9aa'),document.documentElement.style.setProperty('--b','#333');
@@ -78,6 +87,7 @@ document.addEventListener("click",async e=>{
   else if(t.id==="go"){PW=$("#pw").value;try{await api({op:"ping"});sessionStorage.pw=PW;render();autoNotify()}catch(e){PW="";alert(e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"パスワードが違うよ")}}
   else if(t.id==="lock"){PW="";sessionStorage.pw="";isTeacher=false;render()}
   else if(t.id==="theme"){darkMode=!darkMode;localStorage.darkMode=darkMode;render()}
+  else if(t.id==="notify"){requestNotify()}
   else if(t.id==="add"){const ti=$("#ti").value.trim();if(!ti)return alert("名前を入れてね");await act({op:"add",type:$("#ty").value,title:ti,assigned:$("#as").value,due:$("#du").value});tab=$("#ty")?.value||tab}
   else if(d.d&&confirm("消していい?"))act({op:"del",id:d.d});
   else if(d.n){const it=S.items.find(x=>x.id===d.n);if(confirm(notNames(it).length+"人分を先生に送る?"))act({op:"notify",id:d.n,names:notNames(it)})}
