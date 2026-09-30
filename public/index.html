@@ -26,10 +26,11 @@ input:focus,select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px
 .summary-item{background:var(--c);padding:12px;border-radius:8px;border:1px solid var(--b)}
 .summary-item b{display:block;font-size:24px;color:var(--a);margin-bottom:4px}
 .summary-item span{font-size:13px;color:var(--m)}
+.guide-section{margin-bottom:24px}.guide-section h3{color:var(--a);margin-bottom:12px;font-size:18px}.guide-section p{margin-bottom:8px}.guide-section ul{padding-left:20px;margin-bottom:8px}.guide-section li{margin-bottom:4px}.guide-screenshot{background:var(--sb);border-radius:12px;padding:20px;margin:16px 0;text-align:center;border:1px solid var(--b)}.guide-screenshot img{max-width:100%;border-radius:8px}
 @media(max-width:600px){nav button{padding:12px;font-size:13px}.list{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.summary-grid{grid-template-columns:1fr}}
 </style></head><body>
 <header>📚 6年2組 提出・持ち物チェック <span id="st" class="m"></span></header>
-<nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="admin">連携 🔒</button></nav>
+<nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
@@ -77,7 +78,49 @@ function render(){
   $("#st").textContent=online?"🟢 同期中":"🔴 未接続";
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
   let h="";
-  if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">パスワードを入れてログインしてね</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
+  if(tab==="guide"&&!unlocked())h=`<div class="card"><b>🔒 説明書</b><p class="m">説明書を見るには「連携」でログインしてね</p></div>`;
+  else if(tab==="guide")h=`<div class="card"><b>📖 使い方</b>
+    <div class="guide-section">
+      <h3>📚 宿題・持ち物の登録方法</h3>
+      <p>1. 「連携」タブをクリックしてパスワードを入力（6-2）</p>
+      <p>2. 「新しく作る」で以下を入力：</p>
+      <ul>
+        <li>種類：宿題 または 持ち物</li>
+        <li>名前：例「漢字ドリル p.20」「体育着」</li>
+        <li>出た日：宿題が出た日（持ち物なら不要）</li>
+        <li>期限：提出期限（持ち物なら不要）</li>
+      </ul>
+      <p>3. 「作成」ボタンをクリック</p>
+      <div class="guide-screenshot">
+        <p>📸 ここにスクショ（連携タブの新規作成画面）</p>
+      </div>
+    </div>
+    <div class="guide-section">
+      <h3>✅ チェック方法</h3>
+      <p>宿題・持ち物のカードをクリックして展開</p>
+      <p>各人のチェックボックスをクリックしてチェック</p>
+      <p>※パスワードでログインしてないとチェックできないよ</p>
+      <div class="guide-screenshot">
+        <p>📸 ここにスクショ（チェック画面）</p>
+      </div>
+    </div>
+    <div class="guide-section">
+      <h3>📋 一括チェック（複数の宿題がある場合）</h3>
+      <p>出席番号を入力して「一括チェック」ボタン</p>
+      <p>その番号の全ての宿題・持ち物が一括でチェックされる</p>
+    </div>
+    <div class="guide-section">
+      <h3>👨‍🏫 先生モード</h3>
+      <p>パスワード「6-2T」でログインすると先生モードになる</p>
+      <p>クラス全体のサマリーが表示される</p>
+    </div>
+    <div class="guide-section">
+      <h3>🔔 通知機能</h3>
+      <p>「通知」ボタンでブラウザ通知をオンにできる</p>
+      <p>チェック更新時に通知が来る</p>
+    </div>
+  </div>`;
+  else if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">パスワードを入れてログインしてね</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
   else if(tab==="admin"){
     if(isTeacher){const hw=S.items.filter(x=>x.type==="hw"),br=S.items.filter(x=>x.type==="bring");
       const hwTotal=hw.reduce((s,it)=>s+Object.keys(it.checks).length,0),brTotal=br.reduce((s,it)=>s+Object.keys(it.checks).length,0);
