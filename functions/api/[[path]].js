@@ -16,7 +16,7 @@ export async function onRequest({request,env}){
   const b=await request.json();
   if(b.pass!==C.PASSWORD)return J({error:'pw'},401);
   const s=await load(),it=s.items.find(x=>x.id===b.id);
-  if(b.op==='add')s.items.unshift({id:crypto.randomUUID(),type:b.type,title:String(b.title).slice(0,60),due:b.due||'',checks:{},notified:false});
+  if(b.op==='add')s.items.unshift({id:crypto.randomUUID(),type:b.type,title:String(b.title).slice(0,60),assigned:b.assigned||'',due:b.due||'',checks:{},notified:false});
   if(b.op==='del')s.items=s.items.filter(x=>x.id!==b.id);
   if(b.op==='check'&&it){if(b.v)it.checks[b.no]=1;else delete it.checks[b.no];}
   if(b.op==='notify'&&it){
