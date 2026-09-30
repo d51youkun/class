@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "classapp6-2",
+  "pages_build_output_dir": "./public",
+  "compatibility_date": "2026-09-30",
+  "kv_namespaces": [
+    {
+      "binding": "STORE",
+      "id": "78c586e52ff342fd8682bef7afab7867"
+    }
+  ]
+}
