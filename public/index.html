@@ -2,24 +2,31 @@
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>6年2組 提出チェック</title>
 <style>
-:root{--bg:#fff;--c:#fff;--t:#333;--m:#666;--a:#0096e1;--ok:#0096e1;--ng:#e60012;--b:#e0e0e0;--sb:#f5f5f5}
+:root{--bg:#fff;--c:#fff;--t:#333;--m:#666;--a:#0096e1;--ok:#00c853;--ng:#e60012;--b:#e0e0e0;--sb:#f5f5f5}
 *{box-sizing:border-box}body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif;background:var(--bg);color:var(--t);line-height:1.6}
-header{padding:20px 24px;background:var(--a);color:#fff;font-weight:700;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+header{padding:20px 24px;background:var(--a);color:#fff;font-weight:700;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
 nav{display:flex;gap:8px;padding:0 24px;background:var(--sb);border-bottom:2px solid var(--a)}nav button{flex:1;padding:16px;border:0;background:transparent;color:var(--t);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;border-bottom:3px solid transparent}
 nav button:hover{background:rgba(0,150,225,0.1)}nav button.on{color:var(--a);border-bottom-color:var(--a)}
-main{padding:24px;max-width:800px;margin:auto}
-.card{background:var(--c);border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid var(--b);box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:box-shadow 0.2s}
-.card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+main{padding:24px;max-width:900px;margin:auto}
+.card{background:var(--c);border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid var(--b);box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all 0.2s}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-2px)}
 .row{display:flex;align-items:center;gap:12px}.grow{flex:1}.m{color:var(--m);font-size:14px}
-.bar{height:10px;border-radius:5px;background:var(--b);overflow:hidden;margin-top:12px}.bar i{display:block;height:100%;background:var(--ok);transition:width 0.3s}
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
-.list label{display:flex;gap:8px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--b);font-size:14px;cursor:pointer;transition:all 0.2s}
-.list label:hover{background:var(--sb);border-color:var(--a)}.list label.done{background:rgba(0,150,225,0.1);border-color:var(--a)}.list input{width:22px;height:22px;accent-color:var(--a)}
+.bar{height:12px;border-radius:6px;background:var(--b);overflow:hidden;margin-top:12px}.bar i{display:block;height:100%;background:var(--ok);transition:width 0.5s ease-out}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:12px}
+.list label{display:flex;gap:8px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--b);font-size:14px;cursor:pointer;transition:all 0.2s;position:relative;user-select:none}
+.list label:hover{background:var(--sb);border-color:var(--a);transform:scale(1.02)}.list label.done{background:rgba(0,200,83,0.1);border-color:var(--ok)}.list label.done::after{content:"✓";position:absolute;right:12px;color:var(--ok);font-weight:700;font-size:18px}.list input{width:24px;height:24px;accent-color:var(--a);cursor:pointer}
 input,button,select{font:inherit}input[type=text],input[type=password],input[type=date],input[type=number]{padding:12px;border:2px solid var(--b);border-radius:8px;background:var(--c);color:var(--t);width:100%;transition:border-color 0.2s}
-input:focus,select:focus{outline:none;border-color:var(--a)}
-.btn{padding:12px 20px;border:0;border-radius:8px;background:var(--a);color:#fff;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:14px}.btn:hover{background:#007ab8}.btn.r{background:var(--ng)}.btn.r:hover{background:#c4000f}.btn.g{background:var(--m)}.btn:disabled{opacity:0.5;cursor:not-allowed}
+input:focus,select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(0,150,225,0.1)}
+.btn{padding:12px 20px;border:0;border-radius:8px;background:var(--a);color:#fff;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}.btn:hover{background:#007ab8;transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,0.15)}.btn:active{transform:translateY(0)}.btn.r{background:var(--ng)}.btn.r:hover{background:#c4000f}.btn.g{background:var(--m)}.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 .ng{color:var(--ng);font-weight:700}.ok{color:var(--ok);font-weight:700}
 .number-input{display:flex;gap:8px;margin-top:12px}.number-input input{width:80px;text-align:center}
+.summary{background:linear-gradient(135deg,rgba(0,150,225,0.05),rgba(0,200,83,0.05));border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--b)}
+.summary h3{margin:0 0 12px 0;font-size:16px;color:var(--a)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.summary-item{background:var(--c);padding:12px;border-radius:8px;border:1px solid var(--b)}
+.summary-item b{display:block;font-size:24px;color:var(--a);margin-bottom:4px}
+.summary-item span{font-size:13px;color:var(--m)}
+@media(max-width:600px){nav button{padding:12px;font-size:13px}.list{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.summary-grid{grid-template-columns:1fr}}
 </style></head><body>
 <header>📚 6年2組 提出・持ち物チェック <span id="st" class="m"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="admin">連携 🔒</button></nav>
@@ -71,14 +78,27 @@ function render(){
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
   let h="";
   if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">パスワードを入れてログインしてね</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
-  else if(tab==="admin")h=`<div class="card"><b>➕ 新しく作る</b><div style="display:grid;gap:12px;margin-top:12px">
+  else if(tab==="admin"){
+    if(isTeacher){const hw=S.items.filter(x=>x.type==="hw"),br=S.items.filter(x=>x.type==="bring");
+      const hwTotal=hw.reduce((s,it)=>s+Object.keys(it.checks).length,0),brTotal=br.reduce((s,it)=>s+Object.keys(it.checks).length,0);
+      const hwDue=hw.filter(x=>x.due&&x.due<new Date().toISOString().slice(0,10)).length;
+      h+=`<div class="summary"><h3>📊 クラス全体の状況</h3><div class="summary-grid">
+        <div class="summary-item"><b>${hw.length}</b><span>宿題の数</span></div>
+        <div class="summary-item"><b>${hwTotal}</b><span>宿題提出数</span></div>
+        <div class="summary-item"><b>${hwDue}</b><span>期限切れ</span></div>
+        <div class="summary-item"><b>${br.length}</b><span>持ち物の数</span></div>
+        <div class="summary-item"><b>${brTotal}</b><span>持ち物持参数</span></div>
+      </div></div>`;
+    }
+    h+=`<div class="card"><b>➕ 新しく作る</b><div style="display:grid;gap:12px;margin-top:12px">
     <select id="ty"><option value="hw">宿題</option><option value="bring">持ち物</option></select>
     <input type="text" id="ti" placeholder="名前（例:漢字ドリル p.20）" maxlength="60">
     <input type="date" id="as" placeholder="出た日">
     <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
     <div class="card"><div class="m">${isTeacher?"先生モード":"期限を過ぎた宿題は、このページを開いている間に未提出者が先生へ自動送信されるよ。"}</div>
     <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button></div></div>`+S.items.map(card).join("");
-  else{const l=S.items.filter(x=>x.type===tab);if(canCheck()&&l.length>1){h+=`<div class="card"><b>📋 一括チェック</b><div class="number-input"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="34"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
+  }
+  else{const l=S.items.filter(x=>x.type===tab).sort((a,b)=>(a.due||"9999-12-31").localeCompare(b.due||"9999-12-31"));if(canCheck()&&l.length>1){h+=`<div class="card"><b>📋 一括チェック</b><div class="number-input"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="34"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
   $("#app").innerHTML=h;
 }
 document.addEventListener("click",async e=>{
@@ -89,7 +109,7 @@ document.addEventListener("click",async e=>{
   else if(t.id==="lock"){PW="";sessionStorage.pw="";isTeacher=false;render()}
   else if(t.id==="notify"){requestNotify()}
   else if(t.id==="add"){const ti=$("#ti").value.trim();if(!ti)return alert("名前を入れてね");await act({op:"add",type:$("#ty").value,title:ti,assigned:$("#as").value,due:$("#du").value});tab=$("#ty")?.value||tab}
-  else if(t.id==="quickCheck"){const no=+$("#quickNo").value;if(no<1||no>34)return alert("出席番号は1〜34だよ");const l=S.items.filter(x=>x.type===tab);l.forEach(it=>act({op:"check",id:it.id,no,v:true}));alert(no+"番の全ての項目をチェックしたよ")}
+  else if(t.id==="quickCheck"){const no=+$("#quickNo").value;if(no<1||no>34)return alert("出席番号は1〜34だよ");const l=S.items.filter(x=>x.type===tab);for(const it of l){try{await act({op:"check",id:it.id,no,v:true})}catch(e){}}alert(no+"番の全ての項目をチェックしたよ")}
   else if(d.d&&confirm("消していい?"))act({op:"del",id:d.d});
   else if(d.n){const it=S.items.find(x=>x.id===d.n);if(confirm(notNames(it).length+"人分を先生に送る?"))act({op:"notify",id:d.n,names:notNames(it)})}
   else if(t.id==="only"){only=t.checked;render()}
