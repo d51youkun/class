@@ -29,6 +29,7 @@ const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大�
 let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=false,notifyEnabled=false,quickCheckMode=false;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const unlocked=()=>!!PW;
+const canCheck=()=>!!PW||isTeacher;
 async function api(b){
   try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW})});
     if(r.status===401)throw"pw"; if(r.status===502)throw"mail";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true;
@@ -59,9 +60,9 @@ function card(it){
   if(open[it.id]){
     h+=`<div class="row" style="margin-top:12px"><label class="m"><input type="checkbox" id="only" ${only?"checked":""}> ${lbl[1]}だけ表示</label></div><div class="list">`;
     R.forEach((n,i)=>{const c=it.checks[i+1];if(only&&c)return;
-      h+=`<label class="${c?"done":""}"><input type="checkbox" data-c="${it.id}|${i+1}" ${c?"checked":""} ${unlocked()?"":"disabled"}>${i+1}. ${n}</label>`});
-    h+=`</div>${unlocked()?"":'<div class="m" style="margin-top:12px">🔒 チェックするには「連携」でログインしてね</div>'}`;
-    if(unlocked())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📧 先生に${lbl[1]}者を送る</button><button class="btn r" data-d="${it.id}">削除</button></div>`;
+      h+=`<label class="${c?"done":""}"><input type="checkbox" data-c="${it.id}|${i+1}" ${c?"checked":""} ${canCheck()?"":"disabled"}>${i+1}. ${n}</label>`});
+    h+=`</div>${canCheck()?"":'<div class="m" style="margin-top:12px">🔒 チェックするには「連携」でログインしてね</div>'}`;
+    if(canCheck())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📧 先生に${lbl[1]}者を送る</button><button class="btn r" data-d="${it.id}">削除</button></div>`;
   }
   return h+"</div>";
 }
@@ -77,7 +78,7 @@ function render(){
     <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
     <div class="card"><div class="m">${isTeacher?"先生モード":"期限を過ぎた宿題は、このページを開いている間に未提出者が先生へ自動送信されるよ。"}</div>
     <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button></div></div>`+S.items.map(card).join("");
-  else{const l=S.items.filter(x=>x.type===tab);if(l.length>1){h+=`<div class="card"><b>📋 一括チェック</b><div class="number-input"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="34"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
+  else{const l=S.items.filter(x=>x.type===tab);if(canCheck()&&l.length>1){h+=`<div class="card"><b>📋 一括チェック</b><div class="number-input"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="34"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
   $("#app").innerHTML=h;
 }
 document.addEventListener("click",async e=>{
