@@ -34,7 +34,7 @@ input:focus,select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px
 <main id="app"></main>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=false,notifyEnabled=false,quickCheckMode=false;
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=false,notifyEnabled=false,quickCheckMode=false,checking=false;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const unlocked=()=>!!PW;
 const canCheck=()=>!!PW||isTeacher;
@@ -44,7 +44,7 @@ async function api(b){
   }catch(e){if(e==="pw"||e==="mail"||e==="kv")throw e;online=false;throw"net"}
 }
 async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true}catch{online=false}render()}
-async function act(b){try{await api(b);if(b.op==="check")showNotify("チェック更新","チェック状態が更新されたよ")}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"メール送信に失敗(設定を確認)")}render()}
+async function act(b){if(checking)return;checking=true;try{await api(b);if(b.op==="check")showNotify("チェック更新","チェック状態が更新されたよ")}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"メール送信に失敗(設定を確認)")}finally{checking=false}render()}
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 async function autoNotify(){ // 連携ページを開いている間、期限を過ぎたら自動送信
   if(!unlocked())return;const today=new Date().toISOString().slice(0,10);
@@ -82,7 +82,7 @@ function render(){
   else if(tab==="guide")h=`<div class="card"><b>📖 使い方</b>
     <div class="guide-section">
       <h3>📚 宿題・持ち物の登録方法</h3>
-      <p>1. 「連携」タブをクリックしてパスワードを入力（6-2）</p>
+      <p>1. 「連携」タブをクリックしてパスワードを入力</p>
       <p>2. 「新しく作る」で以下を入力：</p>
       <ul>
         <li>種類：宿題 または 持ち物</li>
@@ -111,7 +111,7 @@ function render(){
     </div>
     <div class="guide-section">
       <h3>👨‍🏫 先生モード</h3>
-      <p>パスワード「6-2T」でログインすると先生モードになる</p>
+      <p>先生用パスワードでログインすると先生モードになる</p>
       <p>クラス全体のサマリーが表示される</p>
     </div>
     <div class="guide-section">
