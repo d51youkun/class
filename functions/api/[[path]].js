@@ -21,6 +21,8 @@ export async function onRequest({request,env}){
   if(b.op==='add')s.items.unshift({id:crypto.randomUUID(),type:b.type,title:String(b.title).slice(0,60),assigned:b.assigned||'',due:b.due||'',checks:{},notified:false});
   if(b.op==='del')s.items=s.items.filter(x=>x.id!==b.id);
   if(b.op==='check'&&it){if(b.v)it.checks[b.no]=1;else delete it.checks[b.no];}
+  if(b.op==='archive'&&it)it.archived=Date.now();
+  if(b.op==='restore'&&it)delete it.archived;
   if(b.op==='notify'&&it){
     const text=`【${it.title}】未完了(${b.names.length}人)\n`+b.names.join('\n');
     const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+C.KEY,'content-type':'application/json'},

@@ -2,42 +2,64 @@
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>6年2組 提出チェック</title>
 <style>
-:root{--bg:#fff;--c:#fff;--t:#333;--m:#666;--a:#0096e1;--ok:#00c853;--ng:#e60012;--b:#e0e0e0;--sb:#f5f5f5}
-*{box-sizing:border-box}body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif;background:var(--bg);color:var(--t);line-height:1.6}
-header{padding:20px 24px;background:var(--a);color:#fff;font-weight:700;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
-nav{display:flex;gap:8px;padding:0 24px;background:var(--sb);border-bottom:2px solid var(--a)}nav button{flex:1;padding:16px;border:0;background:transparent;color:var(--t);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;border-bottom:3px solid transparent}
-nav button:hover{background:rgba(0,150,225,0.1)}nav button.on{color:var(--a);border-bottom-color:var(--a)}
-main{padding:24px;max-width:900px;margin:auto}
-.card{background:var(--c);border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid var(--b);box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all 0.2s}
-.card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-2px)}
+:root{--a:#0a84ff;--ok:#1fa64a;--okc:#30d158;--ng:#ff453a;--t:#1c1c1e;--m:#5f5f6a;--glass:rgba(255,255,255,.55);--bd:rgba(255,255,255,.65);--in:rgba(255,255,255,.75)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Meiryo",sans-serif;background:linear-gradient(160deg,#dff0ff 0%,#ece6ff 45%,#ffe9f2 100%);background-attachment:fixed;color:var(--t);line-height:1.6;min-height:100vh}
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(90px);pointer-events:none}
+body::before{width:62vmax;height:62vmax;top:-22vmax;left:-18vmax;background:radial-gradient(circle,rgba(10,132,255,.30),transparent 70%)}
+body::after{width:55vmax;height:55vmax;bottom:-22vmax;right:-16vmax;background:radial-gradient(circle,rgba(255,80,150,.22),transparent 70%)}
+header{position:sticky;top:10px;z-index:20;margin:10px 12px 6px;padding:14px 20px;border-radius:22px;background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--bd);box-shadow:0 8px 30px rgba(31,38,135,.14),inset 0 1px 0 rgba(255,255,255,.85);display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:19px}
+.chip{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid var(--bd);white-space:nowrap}
+nav{display:flex;gap:6px;margin:0 12px 6px;padding:8px;border-radius:18px;background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--bd);box-shadow:0 6px 22px rgba(31,38,135,.10),inset 0 1px 0 rgba(255,255,255,.8)}
+nav button{flex:1;padding:12px 6px;border:0;border-radius:13px;background:transparent;color:var(--t);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+nav button:hover{background:rgba(10,132,255,.10)}
+nav button.on{color:#fff;background:linear-gradient(135deg,#0a84ff,#4aa8ff);box-shadow:0 4px 14px rgba(10,132,255,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+main{padding:14px 12px 40px;max-width:900px;margin:auto}
+.card{background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--bd);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 8px 28px rgba(31,38,135,.10),inset 0 1px 0 rgba(255,255,255,.8);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(31,38,135,.16),inset 0 1px 0 rgba(255,255,255,.85)}
 .row{display:flex;align-items:center;gap:12px}.grow{flex:1}.m{color:var(--m);font-size:14px}
-.bar{height:12px;border-radius:6px;background:var(--b);overflow:hidden;margin-top:12px}.bar i{display:block;height:100%;background:var(--ok);transition:width 0.5s ease-out}
+.bar{height:10px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#30d158,#7ce89b);box-shadow:0 0 12px rgba(48,209,88,.45);transition:width .5s ease-out}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:12px}
-.list label{display:flex;gap:8px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--b);font-size:14px;cursor:pointer;transition:all 0.2s;position:relative;user-select:none}
-.list label:hover{background:var(--sb);border-color:var(--a);transform:scale(1.02)}.list label.done{background:rgba(0,200,83,0.1);border-color:var(--ok)}.list label.done::after{content:"✓";position:absolute;right:12px;color:var(--ok);font-weight:700;font-size:18px}.list input{width:24px;height:24px;accent-color:var(--a);cursor:pointer}
-input,button,select{font:inherit}input[type=text],input[type=password],input[type=date],input[type=number]{padding:12px;border:2px solid var(--b);border-radius:8px;background:var(--c);color:var(--t);width:100%;transition:border-color 0.2s}
-input:focus,select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(0,150,225,0.1)}
-.btn{padding:12px 20px;border:0;border-radius:8px;background:var(--a);color:#fff;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}.btn:hover{background:#007ab8;transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,0.15)}.btn:active{transform:translateY(0)}.btn.r{background:var(--ng)}.btn.r:hover{background:#c4000f}.btn.g{background:var(--m)}.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.list label{display:flex;gap:8px;align-items:center;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.6);font-size:14px;cursor:pointer;transition:all .2s;position:relative;user-select:none}
+.list label:hover{background:rgba(255,255,255,.85);border-color:var(--a);transform:scale(1.02)}
+.list label.done{background:rgba(48,209,88,.16);border-color:rgba(48,209,88,.5)}
+.list label.done::after{content:"✓";position:absolute;right:12px;color:var(--ok);font-weight:800;font-size:18px}
+.list input{width:24px;height:24px;accent-color:var(--a);cursor:pointer}
+input,button,select{font:inherit}
+input[type=text],input[type=password],input[type=date],input[type=number],select{padding:12px;border:1.5px solid rgba(0,0,0,.08);border-radius:12px;background:var(--in);color:var(--t);width:100%;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(10,132,255,.15)}
+.btn{padding:12px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#0a84ff,#4aa8ff);color:#fff;font-weight:700;cursor:pointer;transition:all .2s;font-size:14px;box-shadow:0 4px 14px rgba(10,132,255,.30),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(10,132,255,.38),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:active{transform:translateY(0)}
+.btn.r{background:linear-gradient(135deg,#ff453a,#ff7a6e);box-shadow:0 4px 14px rgba(255,69,58,.30),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn.g{background:linear-gradient(135deg,#8e8e93,#aeaeb4);box-shadow:0 4px 14px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .ng{color:var(--ng);font-weight:700}.ok{color:var(--ok);font-weight:700}
-.number-input{display:flex;gap:8px;margin-top:12px}.number-input input{width:80px;text-align:center}
-.summary{background:linear-gradient(135deg,rgba(0,150,225,0.05),rgba(0,200,83,0.05));border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--b)}
-.summary h3{margin:0 0 12px 0;font-size:16px;color:var(--a)}
+.number-input{display:flex;gap:8px;margin-top:12px}.number-input input{width:90px;text-align:center}
+.summary{background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--bd);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 8px 28px rgba(31,38,135,.10),inset 0 1px 0 rgba(255,255,255,.8)}
+.summary h3{margin:0 0 12px;font-size:16px;color:var(--a)}
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.summary-item{background:var(--c);padding:12px;border-radius:8px;border:1px solid var(--b)}
+.summary-item{background:rgba(255,255,255,.6);padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.7)}
 .summary-item b{display:block;font-size:24px;color:var(--a);margin-bottom:4px}
 .summary-item span{font-size:13px;color:var(--m)}
-.guide-section{margin-bottom:24px}.guide-section h3{color:var(--a);margin-bottom:12px;font-size:18px}.guide-section p{margin-bottom:8px}.guide-section ul{padding-left:20px;margin-bottom:8px}.guide-section li{margin-bottom:4px}.guide-screenshot{background:var(--sb);border-radius:12px;padding:20px;margin:16px 0;text-align:center;border:1px solid var(--b)}.guide-screenshot img{max-width:100%;border-radius:8px}
-@media(max-width:600px){nav button{padding:12px;font-size:13px}.list{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.summary-grid{grid-template-columns:1fr}}
+.guide-section{margin-bottom:24px}.guide-section h3{color:var(--a);margin-bottom:12px;font-size:18px}.guide-section p{margin-bottom:8px}.guide-section ul{padding-left:20px;margin-bottom:8px}.guide-section li{margin-bottom:4px}
+.pers{margin-top:12px;border-top:1px solid rgba(0,0,0,.06);padding-top:12px}
+.pname{font-size:18px;font-weight:800;color:var(--a);margin-bottom:8px}
+.pitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.7);margin-bottom:8px;cursor:pointer}
+.pitem .pv{margin-left:auto;font-size:13px;font-weight:700}
+@media(max-width:600px){header{font-size:16px}nav button{padding:10px 4px;font-size:12px}.list{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.summary-grid{grid-template-columns:1fr}}
 </style></head><body>
-<header>📚 6年2組 提出・持ち物チェック <span id="st" class="m"></span></header>
-<nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
+<header>📚 6年2組 提出・持ち物チェック <span id="st" class="chip"></span></header>
+<nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=false,notifyEnabled=false,quickCheckMode=false,checking=false;
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,darkMode=false,notifyEnabled=false,quickCheckMode=false,checking=false,persNo=0;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const unlocked=()=>!!PW;
 const canCheck=()=>!!PW||isTeacher;
+const activeItems=()=>S.items.filter(x=>!x.archived);
 async function api(b){
   try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW})});
     if(r.status===401)throw"pw"; if(r.status===502)throw"mail";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true;
@@ -48,7 +70,7 @@ async function act(b){if(checking)return;checking=true;try{await api(b);if(b.op=
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 async function autoNotify(){ // 連携ページを開いている間、期限を過ぎたら自動送信
   if(!unlocked())return;const today=new Date().toISOString().slice(0,10);
-  for(const it of S.items)if(it.type==="hw"&&it.due&&it.due<today&&!it.notified&&notNames(it).length&&online)await act({op:"notify",id:it.id,names:notNames(it)});
+  for(const it of S.items){if(it.archived)continue;if(it.type==="hw"&&it.due&&it.due<today&&!it.notified&&notNames(it).length&&online)await act({op:"notify",id:it.id,names:notNames(it)})}
 }
 async function requestNotify(){
   if(!("Notification"in window)){alert("このブラウザは通知に対応してないよ");return}
@@ -70,8 +92,23 @@ function card(it){
     R.forEach((n,i)=>{const c=it.checks[i+1];if(only&&c)return;
       h+=`<label class="${c?"done":""}"><input type="checkbox" data-c="${it.id}|${i+1}" ${c?"checked":""} ${canCheck()?"":"disabled"}>${i+1}. ${n}</label>`});
     h+=`</div>${canCheck()?"":'<div class="m" style="margin-top:12px">🔒 チェックするには「連携」でログインしてね</div>'}`;
-    if(canCheck())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📧 先生に${lbl[1]}者を送る</button><button class="btn r" data-d="${it.id}">削除</button></div>`;
+    if(canCheck())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📧 先生に${lbl[1]}者を送る</button><button class="btn g" data-a="${it.id}">🗄 アーカイブ</button><button class="btn r" data-d="${it.id}">削除</button></div>`;
   }
+  return h+"</div>";
+}
+function archCard(it){
+  const done=Object.keys(it.checks).length,tp=it.type==="hw"?"📚 宿題":"🎒 持ち物";
+  return `<div class="card"><div class="row"><div class="grow"><b>${esc(it.title)}</b>
+   <div class="m">${tp}${it.assigned?"  | 📅 出た日: "+it.assigned:""}${it.due?"  | ⏰ 期限: "+it.due:""}  | <span class="ok">✅ ${done}/${R.length}</span></div></div></div>
+   ${canCheck()?`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-r="${it.id}">↩️ もどす</button><button class="btn r" data-d="${it.id}">完全に削除</button></div>`:'<div class="m" style="margin-top:8px">🔒 もどす・削除には「連携」でログインしてね</div>'}</div>`;
+}
+function persPanel(){
+  if(!persNo)return"";
+  const l=activeItems().filter(x=>x.type===tab);
+  if(!l.length)return `<div class="pers m">このタブにはまだ項目がないよ</div>`;
+  let h=`<div class="pers"><div class="pname">🙋 ${persNo}番 ${esc(R[persNo-1]||"")}</div>`;
+  l.forEach(it=>{const c=it.checks[persNo];
+    h+=`<label class="pitem"><input type="checkbox" data-c="${it.id}|${persNo}" ${c?"checked":""}> <span>${it.type==="hw"?"📚":"🎒"} ${esc(it.title)}</span><span class="pv ${c?"ok":"ng"}">${c?"✓ 済":"未"}</span></label>`});
   return h+"</div>";
 }
 function render(){
@@ -91,23 +128,29 @@ function render(){
         <li>期限：提出期限（持ち物なら不要）</li>
       </ul>
       <p>3. 「作成」ボタンをクリック</p>
-      <div class="guide-screenshot">
-        <p>📸 ここにスクショ（連携タブの新規作成画面）</p>
-      </div>
     </div>
     <div class="guide-section">
-      <h3>✅ チェック方法</h3>
+      <h3>✅ チェック方法（1つずつ）</h3>
       <p>宿題・持ち物のカードをクリックして展開</p>
       <p>各人のチェックボックスをクリックしてチェック</p>
       <p>※パスワードでログインしてないとチェックできないよ</p>
-      <div class="guide-screenshot">
-        <p>📸 ここにスクショ（チェック画面）</p>
-      </div>
     </div>
     <div class="guide-section">
-      <h3>📋 一括チェック（複数の宿題がある場合）</h3>
+      <h3>🙋 個人チェック（ひとり分をひとつずつ）</h3>
+      <p>宿題・持ち物タブの「個人チェック」に出席番号を入力して「表示」</p>
+      <p>その子の項目が全部出るから、できたものだけチェックしてね</p>
+      <p>全部できてたら「⚡ 全部チェック」で一気にOK</p>
+    </div>
+    <div class="guide-section">
+      <h3>⚡ 一括チェック（まとめて）</h3>
       <p>出席番号を入力して「一括チェック」ボタン</p>
       <p>その番号の全ての宿題・持ち物が一括でチェックされる</p>
+    </div>
+    <div class="guide-section">
+      <h3>🗂 アーカイブ</h3>
+      <p>終わった宿題などは、カードを開いて「🗄 アーカイブ」でしまえる</p>
+      <p>しまったものは一覧から消えるけど、「🗂 アーカイブ」タブで見られる</p>
+      <p>「↩️ もどす」で一覧に戻る、「完全に削除」で本当に消えるよ</p>
     </div>
     <div class="guide-section">
       <h3>👨‍🏫 先生モード</h3>
@@ -120,9 +163,14 @@ function render(){
       <p>チェック更新時に通知が来る</p>
     </div>
   </div>`;
+  else if(tab==="arch"){
+    const a=S.items.filter(x=>x.archived);
+    h=`<div class="card"><b>🗂 アーカイブ</b><p class="m">おわった宿題などをしまっておく場所。しまっても消えないよ、「↩️ もどす」で一覧に戻せる。</p></div>`;
+    h+=a.length?a.map(archCard).join(""):'<div class="card m">アーカイブはまだないよ。</div>';
+  }
   else if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">パスワードを入れてログインしてね</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
   else if(tab==="admin"){
-    if(isTeacher){const hw=S.items.filter(x=>x.type==="hw"),br=S.items.filter(x=>x.type==="bring");
+    if(isTeacher){const hw=activeItems().filter(x=>x.type==="hw"),br=activeItems().filter(x=>x.type==="bring");
       const hwTotal=hw.reduce((s,it)=>s+Object.keys(it.checks).length,0),brTotal=br.reduce((s,it)=>s+Object.keys(it.checks).length,0);
       const hwDue=hw.filter(x=>x.due&&x.due<new Date().toISOString().slice(0,10)).length;
       h+=`<div class="summary"><h3>📊 クラス全体の状況</h3><div class="summary-grid">
@@ -139,9 +187,9 @@ function render(){
     <input type="date" id="as" placeholder="出た日">
     <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
     <div class="card"><div class="m">${isTeacher?"先生モード":"期限を過ぎた宿題は、このページを開いている間に未提出者が先生へ自動送信されるよ。"}</div>
-    <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button></div></div>`+S.items.map(card).join("");
+    <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button></div></div>`+activeItems().map(card).join("");
   }
-  else{const l=S.items.filter(x=>x.type===tab).sort((a,b)=>(a.due||"9999-12-31").localeCompare(b.due||"9999-12-31"));if(canCheck()&&l.length>1){h+=`<div class="card"><b>📋 一括チェック</b><div class="number-input"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="34"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
+  else{const l=activeItems().filter(x=>x.type===tab).sort((a,b)=>(a.due||"9999-12-31").localeCompare(b.due||"9999-12-31"));if(canCheck()&&l.length>1){h+=`<div class="card"><b>🙋 個人チェック</b><div class="m">出席番号を入れて「表示」→ その子の項目をひとつずつチェックできるよ</div><div class="number-input" style="margin-top:8px"><input type="number" id="persNoIn" placeholder="番号" min="1" max="${R.length}" value="${persNo||""}"><button class="btn" id="persGo">表示</button>${persNo?'<button class="btn g" id="persAll">⚡ 全部チェック</button>':""}</div>${persPanel()}</div>`;h+=`<div class="card"><b>⚡ 一括チェック</b><div class="m">その番号の全項目をまとめてチェックするよ</div><div class="number-input" style="margin-top:8px"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="${R.length}"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
   $("#app").innerHTML=h;
 }
 document.addEventListener("click",async e=>{
@@ -152,11 +200,14 @@ document.addEventListener("click",async e=>{
   else if(t.id==="lock"){PW="";sessionStorage.pw="";isTeacher=false;render()}
   else if(t.id==="notify"){requestNotify()}
   else if(t.id==="add"){const ti=$("#ti").value.trim();if(!ti)return alert("名前を入れてね");await act({op:"add",type:$("#ty").value,title:ti,assigned:$("#as").value,due:$("#du").value});tab=$("#ty")?.value||tab}
-  else if(t.id==="quickCheck"){const no=+$("#quickNo").value;if(no<1||no>34)return alert("出席番号は1〜34だよ");const l=S.items.filter(x=>x.type===tab);for(const it of l){try{await act({op:"check",id:it.id,no,v:true})}catch(e){}}alert(no+"番の全ての項目をチェックしたよ")}
-  else if(d.d&&confirm("消していい?"))act({op:"del",id:d.d});
-  else if(d.n){const it=S.items.find(x=>x.id===d.n);if(confirm(notNames(it).length+"人分を先生に送る?"))act({op:"notify",id:d.n,names:notNames(it)})}
+  else if(t.id==="persGo"){const no=+$("#persNoIn").value;if(no<1||no>R.length)return alert("出席番号は1〜"+R.length+"だよ");persNo=no;render()}
+  else if(t.id==="persAll"){const l=activeItems().filter(x=>x.type===tab);let n=0;for(const it of l){if(!it.checks[persNo]){try{await act({op:"check",id:it.id,no:persNo,v:true})}catch(e){}}else n++}alert(persNo+"番の項目を全部チェックしたよ")}
+  else if(t.id==="quickCheck"){const no=+$("#quickNo").value;if(no<1||no>R.length)return alert("出席番号は1〜"+R.length+"だよ");const l=activeItems().filter(x=>x.type===tab);for(const it of l){if(!it.checks[no]){try{await act({op:"check",id:it.id,no,v:true})}catch(e){}}}alert(no+"番の全ての項目をチェックしたよ")}
+  else if(d.a&&confirm("アーカイブする?一覧からは消えるけど、アーカイブタブに残るよ"))act({op:"archive",id:d.a});
+  else if(d.r)act({op:"restore",id:d.r});
+  else if(d.d&&confirm("完全に消すよ。いい?"))act({op:"del",id:d.d});
   else if(t.id==="only"){only=t.checked;render()}
 });
 document.addEventListener("change",e=>{const c=e.target.dataset.c;if(c){const[id,no]=c.split("|");act({op:"check",id,no:+no,v:e.target.checked})}});
-pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input[type=text],input[type=password]"))pull()},10000);
+pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input,select"))pull()},10000);
 </script></body></html>
