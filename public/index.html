@@ -80,10 +80,10 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
-<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06C</footer>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06D</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0;
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0,btVisible=false;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 if(localStorage.getItem("btdark")==="1")document.body.classList.add("dark");
 const unlocked=()=>!!PW;
@@ -202,7 +202,7 @@ function render(){
     <div class="guide-section">
       <h3>📮 先生への通知（BlueTalk）</h3>
       <p>「BlueTalkで未提出者を送る」ボタンか、期限切れの自動送信で、未提出の子と解決策が先生のBlueTalkに届くよ</p>
-      <p>届くようにするには、先生モードの「連携」タブで先生のBlueTalkユーザーIDを保存してね</p>
+      <p>設定画面は秘密の場所にあるよ。方法は先生に教えてもらってね</p>
       <p>全員できてたら紙ふぶき🎉が出るからがんばってね</p>
     </div>
     <div class="guide-section">
@@ -248,7 +248,7 @@ function render(){
         <div class="summary-item"><b>${brTotal}</b><span>持ち物持参数</span></div>
       </div></div>`;
     }
-    if(unlocked())h+=`<div class="card"><b>📮 BlueTalk通知の設定</b><div class="m">先生のBlueTalkユーザーIDを入れて「保存」してね（BlueTalkのプロフィール画面で確認できる）。保存すると未提出通知が先生のBlueTalkに届くようになるよ</div><div class="row" style="margin-top:8px;gap:8px"><input type="text" id="btid" placeholder="BlueTalkのユーザーID" value="${esc(S.btTeacher||"")}"><button class="btn" id="btsave">保存</button></div></div>`;
+    if(unlocked()&&btVisible)h+=`<div class="card"><b>📮 BlueTalk通知の設定</b><div class="m">先生のBlueTalkユーザーIDを入れて「保存」してね（BlueTalkのプロフィール画面で確認できる）。保存すると未提出通知が先生のBlueTalkに届くようになるよ</div><div class="row" style="margin-top:8px;gap:8px"><input type="text" id="btid" placeholder="BlueTalkのユーザーID" value="${esc(S.btTeacher||"")}"><button class="btn" id="btsave">保存</button></div></div>`;
     h+=`<div class="card"><b>➕ 新しく作る</b><div style="display:grid;gap:12px;margin-top:12px">
     <select id="ty"><option value="hw">宿題</option><option value="bring">持ち物</option></select>
     <input type="text" id="ti" placeholder="名前（例:漢字ドリル p.20）" maxlength="60">
@@ -263,6 +263,7 @@ function render(){
 document.addEventListener("click",async e=>{
   const t=e.target,d=t.dataset;
   if(t.id==="dm"){document.body.classList.toggle("dark");localStorage.btdark=document.body.classList.contains("dark")?"1":"0";render();return}
+  if(t.id==="app"&&tab==="admin"&&unlocked()){const k=prompt("なにか入力してね");if(k!==null&&k.trim().toLowerCase()==="bluetalk"){btVisible=!btVisible;render()}return}
   if(d.t){tab=d.t;render();if(tab==="admin")autoNotify()}
   else if(d.o||t.closest("[data-o]")){const id=d.o||t.closest("[data-o]").dataset.o;open[id]=!open[id];render()}
   else if(t.id==="go"){PW=$("#pw").value;try{await api({op:"ping"});sessionStorage.pw=PW;render();autoNotify()}catch(e){PW="";alert(e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"パスワードが違うよ")}}
