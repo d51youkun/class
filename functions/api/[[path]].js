@@ -24,7 +24,6 @@ export async function onRequest({request,env}){
   if(b.op==='del')s.items=s.items.filter(x=>x.id!==b.id);
   if(b.op==='check'&&it){if(b.v){it.checks[b.no]=1;if(it.solutions)delete it.solutions[b.no];}else delete it.checks[b.no];}
   if(b.op==='solve'&&it){it.solutions=it.solutions||{};const t=String(b.text||'').slice(0,120).trim();if(t)it.solutions[b.no]=t;else delete it.solutions[b.no];}
-  if((b.op==='archive'||b.op==='restore'||b.op==='import'||b.op==='cfg')&&!isTeacher)return J({error:'teacher'},403);
   if(b.op==='cfg')s.btTeacher=String(b.btTeacher||'').slice(0,64).trim();
   if(b.op==='archive'&&it)it.archived=Date.now();
   if(b.op==='restore'&&it)delete it.archived;
