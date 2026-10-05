@@ -40,6 +40,13 @@ export async function onRequest({request,env}){
     }catch(e){return J({error:'bt'},502)}
     it.notified=true;it.via='bluetalk';
   }
-  await env.STORE.put('state',JSON.stringify(s));
+  if(b.op!=='ping'){
+    s.rev=(s.rev||0)+1;
+    if(b.op==='check'&&it)s.lastEvent={t:'check',title:it.title,no:b.no,ts:Date.now()};
+    if(b.op==='solve'&&it)s.lastEvent={t:'solve',title:it.title,no:b.no,ts:Date.now()};
+    if(b.op==='add'&&s.items[0])s.lastEvent={t:'add',title:s.items[0].title,ts:Date.now()};
+    if(b.op==='notify'&&it&&it.notified)s.lastEvent={t:'notify',title:it.title,ts:Date.now()};
+    await env.STORE.put('state',JSON.stringify(s));
+  }
   return J({...s,isTeacher});
 }

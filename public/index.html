@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>6年2組 提出チェック</title>
+<meta http-equiv="Cache-Control" content="no-store,no-cache,must-revalidate">
 <meta name="theme-color" content="#0a84ff">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
@@ -79,9 +80,10 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-05D</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0;
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 if(localStorage.getItem("btdark")==="1")document.body.classList.add("dark");
 const unlocked=()=>!!PW;
@@ -89,15 +91,24 @@ const canCheck=()=>!!PW||isTeacher;
 const activeItems=()=>S.items.filter(x=>!x.archived);
 async function api(b){
   try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW})});
-    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true;
+    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true; handleEvents(res);
   }catch(e){if(e!=="net")throw e;online=false;throw"net"}
 }
-async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true}catch{online=false}render()}
+async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true;handleEvents(S)}catch{online=false}render()}
+function handleEvents(s){
+  if(!s||typeof s!=="object")return;
+  if(!booted){booted=true;lastEvTs=s.lastEvent?s.lastEvent.ts:0;return}
+  const ev=s.lastEvent;
+  if(ev&&ev.ts>lastEvTs){lastEvTs=ev.ts;
+    const who=ev.no?ev.no+"番 ":"";
+    const msg=ev.t==="check"?who+"が「"+ev.title+"」をチェックしたよ":ev.t==="solve"?who+"が「"+ev.title+"」の解決策を書いたよ":ev.t==="notify"?"「"+ev.title+"」の未提出者を先生に送ったよ":ev.t==="add"?"新しい項目: "+ev.title:"更新されたよ";
+    if("Notification"in window&&Notification.permission==="granted")new Notification("📚 6-2チェック",{body:msg});
+  }
+}
 async function act(b){if(checking)return;checking=true;try{await api(b);
-  if(b.op==="check"){showNotify("チェック更新","チェック状態が更新されたよ");
-    const t2=S.items.find(x=>x.id===b.id);
+  if(b.op==="check"){const t2=S.items.find(x=>x.id===b.id);
     if(b.v&&t2&&Object.keys(t2.checks).length===R.length){confetti();showNotify("🎉 全員達成！",t2.title+" みんなできたよ!")}}
-}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":e==="bt"?"BlueTalkに送れなかったよ(先生の設定を確認してね)":"エラーが発生したよ")}finally{checking=false}render()}
+}catch(e){if(e!=="bt")alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"エラーが発生したよ")}finally{checking=false}render()}
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 function notNamesRich(it){const so=it.solutions||{};return R.map((n,i)=>({n,i})).filter(x=>!it.checks[x.i+1]).map(x=>(x.i+1)+". "+x.n+(so[x.i+1]?"（解決策: "+so[x.i+1]+"）":""))}
 function confetti(){const c=document.createElement("div");c.className="confetti";for(let i=0;i<70;i++){const s=document.createElement("i");s.style.left=Math.random()*100+"%";s.style.background=["#ff453a","#0a84ff","#30d158","#ffd60a","#ff9f0a","#bf5af2"][i%6];s.style.animationDelay=(Math.random()*.6)+"s";s.style.animationDuration=(2+Math.random()*1.5)+"s";c.appendChild(s)}document.body.appendChild(c);setTimeout(()=>c.remove(),4200)}
@@ -187,6 +198,12 @@ function render(){
       <p>全員できてたら紙ふぶき🎉が出るからがんばってね</p>
     </div>
     <div class="guide-section">
+      <h3>🔔 通知を受け取る（全員）</h3>
+      <p>「連携」タブの「🔔 通知」ボタンで許可すると、だれかがチェックしたり解決策を書いたりしたら<b>すぐ</b>スマホに届くよ</p>
+      <p>来ないときはブラウザの設定で、このサイトの通知が「許可」になってるか確認してね</p>
+    </div>
+    </div>
+    <div class="guide-section">
       <h3>🌙 ダークモード</h3>
       <p>右上の 🌙 ボタンで夜versionに切り替えられるよ</p>
     </div>
@@ -255,5 +272,5 @@ document.addEventListener("change",async e=>{
   if(e.target.id==="imp"){const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!confirm("読み込むと今のデータが入れ変わるよ。いい?"))return;await act({op:"import",data})}catch(err){alert("JSONファイルが読めなかったよ")}}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id&&e.target.id.startsWith("sol-")){const id=e.target.id.slice(4);act({op:"solve",id,no:+document.querySelector('[data-s="'+id+'"]').dataset.no,text:e.target.value})}});
-pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input,select"))pull()},10000);
+pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input,select"))pull()},6000);
 </script></body></html>
