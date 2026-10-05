@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6年2組 提出チェック</title>
+<meta http-equiv="Cache-Control" content="no-store,no-cache,must-revalidate">
+<meta name="theme-color" content="#0a84ff">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--a:#0a84ff;--ok:#1fa64a;--okc:#30d158;--ng:#ff453a;--t:#1c1c1e;--m:#5f5f6a;--glass:rgba(255,255,255,.55);--bd:rgba(255,255,255,.65);--in:rgba(255,255,255,.75)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Meiryo",sans-serif;background:linear-gradient(160deg,#dff0ff 0%,#ece6ff 45%,#ffe9f2 100%);background-attachment:fixed;color:var(--t);line-height:1.6;min-height:100vh}
+body.dark{--glass:rgba(22,24,34,.55);--bd:rgba(255,255,255,.14);--in:rgba(30,32,44,.72);--t:#f2f2f7;--m:#a8a8b4;background:linear-gradient(160deg,#0c1120 0%,#151328 45%,#221225 100%)}
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(90px);pointer-events:none}
+body::before{width:62vmax;height:62vmax;top:-22vmax;left:-18vmax;background:radial-gradient(circle,rgba(10,132,255,.30),transparent 70%)}
+body::after{width:55vmax;height:55vmax;bottom:-22vmax;right:-16vmax;background:radial-gradient(circle,rgba(255,80,150,.22),transparent 70%)}
+header{position:sticky;top:10px;z-index:20;margin:10px 12px 6px;padding:14px 20px;border-radius:22px;background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--bd);box-shadow:0 8px 30px rgba(31,38,135,.14),inset 0 1px 0 rgba(255,255,255,.85);display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:19px}
+.chip{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid var(--bd);white-space:nowrap;cursor:pointer;color:var(--t)}
+body.dark .chip{background:rgba(255,255,255,.08)}
+nav{display:flex;gap:6px;margin:0 12px 6px;padding:8px;border-radius:18px;background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--bd);box-shadow:0 6px 22px rgba(31,38,135,.10),inset 0 1px 0 rgba(255,255,255,.8)}
+nav button{flex:1;padding:12px 6px;border:0;border-radius:13px;background:transparent;color:var(--t);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+nav button:hover{background:rgba(10,132,255,.10)}
+nav button.on{color:#fff;background:linear-gradient(135deg,#0a84ff,#4aa8ff);box-shadow:0 4px 14px rgba(10,132,255,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+main{padding:14px 12px 40px;max-width:900px;margin:auto}
+.card{background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--bd);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 8px 28px rgba(31,38,135,.10),inset 0 1px 0 rgba(255,255,255,.8);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(31,38,135,.16),inset 0 1px 0 rgba(255,255,255,.85)}
+.row{display:flex;align-items:center;gap:12px}.grow{flex:1}.m{color:var(--m);font-size:14px}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;vertical-align:2px}
+.bng{background:rgba(255,69,58,.16);color:#ff6961}
+.bok{background:rgba(255,214,10,.2);color:#c99700}
+body.dark .bok{color:#ffd60a}
+.bin{background:rgba(10,132,255,.14);color:var(--a)}
+.bar{height:10px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:12px}
+body.dark .bar{background:rgba(255,255,255,.10)}
+.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#30d158,#7ce89b);box-shadow:0 0 12px rgba(48,209,88,.45);transition:width .5s ease-out}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:12px}
+.list label{display:flex;gap:8px;align-items:center;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.6);font-size:14px;cursor:pointer;transition:all .2s;position:relative;user-select:none}
+body.dark .list label{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+.list label:hover{background:rgba(255,255,255,.85);border-color:var(--a);transform:scale(1.02)}
+body.dark .list label:hover{background:rgba(255,255,255,.12)}
+.list label.done{background:rgba(48,209,88,.16);border-color:rgba(48,209,88,.5)}
+.list label.done::after{content:"✓";position:absolute;right:12px;color:var(--ok);font-weight:800;font-size:18px}
+.list input{width:24px;height:24px;accent-color:var(--a);cursor:pointer}
+input,button,select{font:inherit;color:var(--t)}
+input[type=text],input[type=password],input[type=date],input[type=number],select{padding:12px;border:1.5px solid rgba(0,0,0,.08);border-radius:12px;background:var(--in);width:100%;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(10,132,255,.15)}
+.btn{padding:12px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#0a84ff,#4aa8ff);color:#fff;font-weight:700;cursor:pointer;transition:all .2s;font-size:14px;box-shadow:0 4px 14px rgba(10,132,255,.30),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(10,132,255,.38),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:active{transform:translateY(0)}
+.btn.r{background:linear-gradient(135deg,#ff453a,#ff7a6e);box-shadow:0 4px 14px rgba(255,69,58,.30),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn.g{background:linear-gradient(135deg,#8e8e93,#aeaeb4);box-shadow:0 4px 14px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.ng{color:var(--ng);font-weight:700}.ok{color:var(--ok);font-weight:700}
+.number-input{display:flex;gap:8px;margin-top:12px}.number-input input{width:90px;text-align:center}
+.summary{background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--bd);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 8px 28px rgba(31,38,135,.10),inset 0 1px 0 rgba(255,255,255,.8)}
+.summary h3{margin:0 0 12px;font-size:16px;color:var(--a)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.summary-item{background:rgba(255,255,255,.6);padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.7)}
+body.dark .summary-item{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+.summary-item b{display:block;font-size:24px;color:var(--a);margin-bottom:4px}
+.summary-item span{font-size:13px;color:var(--m)}
+.guide-section{margin-bottom:24px}.guide-section h3{color:var(--a);margin-bottom:12px;font-size:18px}.guide-section p{margin-bottom:8px}.guide-section ul{padding-left:20px;margin-bottom:8px}.guide-section li{margin-bottom:4px}
+.guide-screenshot{background:rgba(255,255,255,.5);border-radius:12px;padding:12px;margin:14px 0;text-align:center;border:1px solid var(--bd)}
+body.dark .guide-screenshot{background:rgba(255,255,255,.05)}
+.guide-screenshot img{max-width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15)}
+.pers{margin-top:12px;border-top:1px solid rgba(0,0,0,.06);padding-top:12px}
+body.dark .pers{border-top-color:rgba(255,255,255,.1)}
+.pname{font-size:18px;font-weight:800;color:var(--a);margin-bottom:8px}
+.pitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.7);margin-bottom:8px;cursor:pointer}
+body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+.pitem .pv{margin-left:auto;font-size:13px;font-weight:700}
+.solrow{display:flex;gap:8px;margin:-4px 0 10px 12px}
+.solrow input{flex:1;padding:8px 12px;font-size:13px}
+.solmark{font-size:12px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden}
+.confetti i{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(106vh) rotate(560deg)}}
+@media(max-width:600px){header{font-size:16px}nav button{padding:10px 4px;font-size:12px}.list{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.summary-grid{grid-template-columns:1fr}}
+</style></head><body>
+<header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
+<nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
+<main id="app"></main>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-05C</footer>
+<script>
+const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0;
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+if(localStorage.getItem("btdark")==="1")document.body.classList.add("dark");
+const unlocked=()=>!!PW;
+const canCheck=()=>!!PW||isTeacher;
+const activeItems=()=>S.items.filter(x=>!x.archived);
+async function api(b){
+  try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW})});
+    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true; handleEvents(res);
+  }catch(e){if(e!=="net")throw e;online=false;throw"net"}
+}
+async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true;handleEvents(S)}catch{online=false}render()}
+function handleEvents(s){
+  if(!s||typeof s!=="object")return;
+  if(!booted){booted=true;lastEvTs=s.lastEvent?s.lastEvent.ts:0;return}
+  const ev=s.lastEvent;
+  if(ev&&ev.ts>lastEvTs){lastEvTs=ev.ts;
+    const who=ev.no?ev.no+"番 ":"";
+    const msg=ev.t==="check"?who+"が「"+ev.title+"」をチェックしたよ":ev.t==="solve"?who+"が「"+ev.title+"」の解決策を書いたよ":ev.t==="notify"?"「"+ev.title+"」の未提出者を先生に送ったよ":ev.t==="add"?"新しい項目: "+ev.title:"更新されたよ";
+    if("Notification"in window&&Notification.permission==="granted")new Notification("📚 6-2チェック",{body:msg});
+  }
+}
+async function act(b){if(checking)return;checking=true;try{await api(b);
+  if(b.op==="check"){const t2=S.items.find(x=>x.id===b.id);
+    if(b.v&&t2&&Object.keys(t2.checks).length===R.length){confetti();showNotify("🎉 全員達成！",t2.title+" みんなできたよ!")}}
+}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":e==="bt"?"BlueTalkに送れなかったよ(先生の設定を確認してね)":"エラーが発生したよ")}finally{checking=false}render()}
+function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
+function notNamesRich(it){const so=it.solutions||{};return R.map((n,i)=>({n,i})).filter(x=>!it.checks[x.i+1]).map(x=>(x.i+1)+". "+x.n+(so[x.i+1]?"（解決策: "+so[x.i+1]+"）":""))}
+function confetti(){const c=document.createElement("div");c.className="confetti";for(let i=0;i<70;i++){const s=document.createElement("i");s.style.left=Math.random()*100+"%";s.style.background=["#ff453a","#0a84ff","#30d158","#ffd60a","#ff9f0a","#bf5af2"][i%6];s.style.animationDelay=(Math.random()*.6)+"s";s.style.animationDuration=(2+Math.random()*1.5)+"s";c.appendChild(s)}document.body.appendChild(c);setTimeout(()=>c.remove(),4200)}
+function dueBadge(it){if(!it.due)return"";const t=new Date().toISOString().slice(0,10);if(it.due<t)return' <span class="badge bng">期限切れ</span>';if(it.due===t)return' <span class="badge bok">今日まで!</span>';const d=Math.round((new Date(it.due)-new Date(t))/864e5);return d>0?' <span class="badge bin">あと'+d+'日</span>':""}
+async function autoNotify(){ // 連携ページを開いている間、期限を過ぎたら自動送信
+  if(!unlocked())return;const today=new Date().toISOString().slice(0,10);
+  for(const it of S.items){if(it.archived)continue;if(it.type==="hw"&&it.due&&it.due<today&&!it.notified&&notNames(it).length&&online)await act({op:"notify",id:it.id,names:notNamesRich(it)})}
+}
+async function requestNotify(){
+  if(!("Notification"in window)){alert("このブラウザは通知に対応してないよ");return}
+  if(Notification.permission==="granted"){notifyEnabled=true;alert("通知オン！")}
+  else if(Notification.permission!=="denied"){const p=await Notification.requestPermission();if(p==="granted"){notifyEnabled=true;alert("通知オン！")}}
+  else alert("通知が拒否されてるよ。ブラウザの設定で変えてね");
+}
+function showNotify(title,body){
+  if(notifyEnabled&&Notification.permission==="granted")new Notification(title,{body});
+}
+function card(it){
+  const done=Object.keys(it.checks).length,p=Math.round(done/R.length*100),un=notNames(it);
+  const lbl=it.type==="hw"?["提出済","未提出"]:["持った","忘れ"];
+  let h=`<div class="card"><div class="row" data-o="${it.id}" style="cursor:pointer"><div class="grow"><b>${esc(it.title)}</b>${dueBadge(it)}
+   <div class="m">${it.assigned?"📅 出た日: "+it.assigned+"  | ":""}${it.due?"⏰ 期限: "+it.due+"  | ":""}${lbl[0]} ${done}/${R.length}${un.length?`  | <span class="ng">${lbl[1]} ${un.length}人</span>`:`  | <span class="ok">全員OK🎉</span>`}${it.notified?"  | 📮送信済":""}</div></div><span>${open[it.id]?"▲":"▼"}</span></div>
+   <div class="bar"><i style="width:${p}%"></i></div>`;
+  if(open[it.id]){
+    h+=`<div class="row" style="margin-top:12px"><label class="m"><input type="checkbox" id="only" ${only?"checked":""}> ${lbl[1]}だけ表示</label></div><div class="list">`;
+    R.forEach((n,i)=>{const c=it.checks[i+1];if(only&&c)return;
+      const so=it.solutions&&it.solutions[i+1];
+      h+=`<label class="${c?"done":""}" ${so?`title="解決策: ${esc(so)}"`:""}><input type="checkbox" data-c="${it.id}|${i+1}" ${c?"checked":""} ${canCheck()?"":"disabled"}>${i+1}. ${n}${so?' <span class="solmark">💬</span>':""}</label>`});
+    h+=`</div>${canCheck()?"":'<div class="m" style="margin-top:12px">🔒 チェックするには「連携」でログインしてね</div>'}`;
+    if(canCheck())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📮 BlueTalkで${lbl[1]}者を送る</button>${isTeacher?`<button class="btn g" data-a="${it.id}">🗄 アーカイブ</button>`:""}<button class="btn r" data-d="${it.id}">削除</button></div>`;
+  }
+  return h+"</div>";
+}
+function archCard(it){
+  const done=Object.keys(it.checks).length,tp=it.type==="hw"?"📚 宿題":"🎒 持ち物";
+  return `<div class="card"><div class="row"><div class="grow"><b>${esc(it.title)}</b>${dueBadge(it)}
+   <div class="m">${tp}${it.assigned?"  | 📅 出た日: "+it.assigned:""}${it.due?"  | ⏰ 期限: "+it.due:""}  | <span class="ok">✅ ${done}/${R.length}</span></div></div></div>
+   ${isTeacher?`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-r="${it.id}">↩️ もどす</button><button class="btn r" data-d="${it.id}">完全に削除</button></div>`:'<div class="m" style="margin-top:8px">🔒 もどす・削除は先生だけができるよ（「連携」でログインしてね）</div>'}</div>`;
+}
+function persPanel(){
+  if(!persNo)return"";
+  const l=activeItems().filter(x=>x.type===tab);
+  if(!l.length)return `<div class="pers m">このタブにはまだ項目がないよ</div>`;
+  let h=`<div class="pers"><div class="pname">🙋 ${persNo}番 ${esc(R[persNo-1]||"")}</div>`;
+  l.forEach(it=>{const c=it.checks[persNo];const so=(it.solutions&&it.solutions[persNo])||"";
+    h+=`<label class="pitem"><input type="checkbox" data-c="${it.id}|${persNo}" ${c?"checked":""}> <span>${it.type==="hw"?"📚":"🎒"} ${esc(it.title)}</span><span class="pv ${c?"ok":"ng"}">${c?"✓ 済":"未"}</span></label>`;
+    if(!c&&canCheck())h+=`<div class="solrow"><input type="text" id="sol-${it.id}" placeholder="忘れたときは解決策を書いてね（例: 明日持ってくる）" maxlength="120" value="${esc(so)}"><button class="btn g" data-s="${it.id}" data-no="${persNo}">保存</button></div>`});
+  return h+"</div>";
+}
+function render(){
+  $("#st").textContent=online?"🟢 同期中":"🔴 未接続";
+  $("#dm").textContent=document.body.classList.contains("dark")?"☀️":"🌙";
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+  let h="";
+  if(tab==="guide"&&!unlocked())h=`<div class="card"><b>🔒 説明書</b><p class="m">説明書を見るには「連携」でログインしてね</p></div>`;
+  else if(tab==="guide")h=`<div class="card"><b>📖 使い方</b>
+    <div class="guide-section">
+      <h3>📚 宿題・持ち物の登録方法</h3>
+      <p>1. 「連携」タブでパスワードを入力（先生は6-2T、みんなは6-2）</p>
+      <p>2. 「新しく作る」で種類・名前・出た日・期限を入れて「作成」</p>
+      <div class="guide-screenshot"><img src="photos/guide-create.jpg" alt="新規作成画面" loading="lazy" onerror="this.style.display='none'"><div class="m">📍 「連携」タブの新規作成フォーム</div></div>
+    </div>
+    <div class="guide-section">
+      <h3>✅ チェック方法（1つずつ）</h3>
+      <p>カードをクリックして展開 → 各人のチェックボックスを押してね</p>
+      <div class="guide-screenshot"><img src="photos/guide-check.jpg" alt="チェック画面" loading="lazy" onerror="this.style.display='none'"><div class="m">📍 展開したカードのチェックリスト</div></div>
+    </div>
+    <div class="guide-section">
+      <h3>🙋 個人チェック＆解決策入力</h3>
+      <p>「個人チェック」に出席番号を入れて「表示」→ その子の項目が全部出るよ</p>
+      <p>忘れた項目には <b>解決策</b> も書ける（例: 明日持ってくる）。解決策は先生への通知にも載るよ</p>
+      <div class="guide-screenshot"><img src="photos/guide-personal.jpg" alt="個人チェック画面" loading="lazy" onerror="this.style.display='none'"><div class="m">📍 個人チェックパネル（下に解決策入力が出る）</div></div>
+    </div>
+    <div class="guide-section">
+      <h3>⚡ 一括チェック（まとめて）</h3>
+      <p>出席番号を入れて「一括チェック」→ その番号の全項目をまとめてOKにできる</p>
+    </div>
+    <div class="guide-section">
+      <h3>🗂 アーカイブ（先生だけ）</h3>
+      <p>終わった宿題は先生がカードを開いて「🗄 アーカイブ」でしまえるよ</p>
+      <p>しまったものは「🗂 アーカイブ」タブで見られる。「↩️ もどす」「完全に削除」も先生だけできる</p>
+      <div class="guide-screenshot"><img src="photos/guide-archive.jpg" alt="アーカイブ画面" loading="lazy" onerror="this.style.display='none'"><div class="m">📍 アーカイブタブ</div></div>
+    </div>
+    <div class="guide-section">
+      <h3>📮 先生への通知（BlueTalk）</h3>
+      <p>「BlueTalkで未提出者を送る」ボタンか、期限切れの自動送信で、未提出の子と解決策が先生のBlueTalkに届くよ</p>
+      <p>全員できてたら紙ふぶき🎉が出るからがんばってね</p>
+    </div>
+    <div class="guide-section">
+      <h3>🔔 通知を受け取る（全員）</h3>
+      <p>「連携」タブの「🔔 通知」ボタンで許可すると、だれかがチェックしたり解決策を書いたりしたら<b>すぐ</b>スマホに届くよ</p>
+      <p>来ないときはブラウザの設定で、このサイトの通知が「許可」になってるか確認してね</p>
+    </div>
+    </div>
+    <div class="guide-section">
+      <h3>🌙 ダークモード</h3>
+      <p>右上の 🌙 ボタンで夜versionに切り替えられるよ</p>
+    </div>
+    <div class="guide-section">
+      <h3>📲 ホーム画面に追加</h3>
+      <p>スマホ/iPadでブラウザの「ホーム画面に追加」をすると、アプリみたいに開けるよ</p>
+    </div>
+    <div class="guide-section">
+      <h3>💾 データのバックアップ（先生）</h3>
+      <p>「連携」タブの「⬇️ 書き出し」でデータをファイルに保存できる</p>
+      <p>「📤 読み込み」で保存したファイルに戻せるよ（先生だけ）</p>
+    </div>
+  </div>`;
+  else if(tab==="arch"){
+    const a=S.items.filter(x=>x.archived);
+    h=`<div class="card"><b>🗂 アーカイブ</b><p class="m">おわった宿題などをしまっておく場所。しまっても消えないよ。もどす・削除は先生だけできる。</p></div>`;
+    h+=a.length?a.map(archCard).join(""):'<div class="card m">アーカイブはまだないよ。</div>';
+  }
+  else if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">パスワードを入れてログインしてね</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
+  else if(tab==="admin"){
+    if(isTeacher){const hw=activeItems().filter(x=>x.type==="hw"),br=activeItems().filter(x=>x.type==="bring");
+      const hwTotal=hw.reduce((s,it)=>s+Object.keys(it.checks).length,0),brTotal=br.reduce((s,it)=>s+Object.keys(it.checks).length,0);
+      const hwDue=hw.filter(x=>x.due&&x.due<new Date().toISOString().slice(0,10)).length;
+      h+=`<div class="summary"><h3>📊 クラス全体の状況</h3><div class="summary-grid">
+        <div class="summary-item"><b>${hw.length}</b><span>宿題の数</span></div>
+        <div class="summary-item"><b>${hwTotal}</b><span>宿題提出数</span></div>
+        <div class="summary-item"><b>${hwDue}</b><span>期限切れ</span></div>
+        <div class="summary-item"><b>${br.length}</b><span>持ち物の数</span></div>
+        <div class="summary-item"><b>${brTotal}</b><span>持ち物持参数</span></div>
+      </div></div>`;
+    }
+    h+=`<div class="card"><b>➕ 新しく作る</b><div style="display:grid;gap:12px;margin-top:12px">
+    <select id="ty"><option value="hw">宿題</option><option value="bring">持ち物</option></select>
+    <input type="text" id="ti" placeholder="名前（例:漢字ドリル p.20）" maxlength="60">
+    <input type="date" id="as" placeholder="出た日">
+    <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
+    <div class="card"><div class="m">${isTeacher?"先生モード（アーカイブ・バックアップができるよ）":"期限を過ぎた宿題は、このページを開いている間に未提出者が先生へ自動送信されるよ。"}</div>
+    <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button>${isTeacher?'<button class="btn g" id="exp">⬇️ 書き出し</button><label class="btn g" style="cursor:pointer">📤 読み込み<input type="file" id="imp" accept=".json,application/json" style="display:none"></label>':""}</div></div>`+activeItems().map(card).join("");
+  }
+  else{const l=activeItems().filter(x=>x.type===tab).sort((a,b)=>(a.due||"9999-12-31").localeCompare(b.due||"9999-12-31"));if(canCheck()&&l.length>1){h+=`<div class="card"><b>🙋 個人チェック</b><div class="m">出席番号を入れて「表示」→ その子の項目をひとつずつチェックできるよ。忘れたときは解決策も書ける！</div><div class="number-input" style="margin-top:8px"><input type="number" id="persNoIn" placeholder="番号" min="1" max="${R.length}" value="${persNo||""}"><button class="btn" id="persGo">表示</button>${persNo?'<button class="btn g" id="persAll">⚡ 全部チェック</button>':""}</div>${persPanel()}</div>`;h+=`<div class="card"><b>⚡ 一括チェック</b><div class="m">その番号の全項目をまとめてチェックするよ</div><div class="number-input" style="margin-top:8px"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="${R.length}"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
+  $("#app").innerHTML=h;
+}
+document.addEventListener("click",async e=>{
+  const t=e.target,d=t.dataset;
+  if(t.id==="dm"){document.body.classList.toggle("dark");localStorage.btdark=document.body.classList.contains("dark")?"1":"0";render();return}
+  if(d.t){tab=d.t;render();if(tab==="admin")autoNotify()}
+  else if(d.o||t.closest("[data-o]")){const id=d.o||t.closest("[data-o]").dataset.o;open[id]=!open[id];render()}
+  else if(t.id==="go"){PW=$("#pw").value;try{await api({op:"ping"});sessionStorage.pw=PW;render();autoNotify()}catch(e){PW="";alert(e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"パスワードが違うよ")}}
+  else if(t.id==="lock"){PW="";sessionStorage.pw="";isTeacher=false;render()}
+  else if(t.id==="notify"){requestNotify()}
+  else if(t.id==="exp"){const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="classapp-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(a.href)}
+  else if(d.s){const inp=$("#sol-"+d.s);if(inp)act({op:"solve",id:d.s,no:+d.no,text:inp.value})}
+  else if(t.id==="add"){const ti=$("#ti").value.trim();if(!ti)return alert("名前を入れてね");await act({op:"add",type:$("#ty").value,title:ti,assigned:$("#as").value,due:$("#du").value});tab=$("#ty")?.value||tab}
+  else if(t.id==="persGo"){const no=+$("#persNoIn").value;if(no<1||no>R.length)return alert("出席番号は1〜"+R.length+"だよ");persNo=no;render()}
+  else if(t.id==="persAll"){const l=activeItems().filter(x=>x.type===tab);for(const it of l){if(!it.checks[persNo]){try{await act({op:"check",id:it.id,no:persNo,v:true})}catch(e){}}}alert(persNo+"番の項目を全部チェックしたよ")}
+  else if(t.id==="quickCheck"){const no=+$("#quickNo").value;if(no<1||no>R.length)return alert("出席番号は1〜"+R.length+"だよ");const l=activeItems().filter(x=>x.type===tab);for(const it of l){if(!it.checks[no]){try{await act({op:"check",id:it.id,no,v:true})}catch(e){}}}alert(no+"番の全ての項目をチェックしたよ")}
+  else if(d.a){if(!isTeacher)return alert("アーカイブは先生だけができるよ");if(confirm("アーカイブする?一覧からは消えるけど、アーカイブタブに残るよ"))act({op:"archive",id:d.a})}
+  else if(d.r){if(!isTeacher)return alert("もどすは先生だけができるよ");act({op:"restore",id:d.r})}
+  else if(d.d&&confirm("完全に消すよ。いい?"))act({op:"del",id:d.d});
+  else if(d.n){const it=S.items.find(x=>x.id===d.n);if(confirm(notNames(it).length+"人分を先生に送る?"))act({op:"notify",id:d.n,names:notNamesRich(it)})}
+  else if(t.id==="only"){only=t.checked;render()}
+});
+document.addEventListener("change",async e=>{
+  const c=e.target.dataset.c;
+  if(c){const[id,no]=c.split("|");act({op:"check",id,no:+no,v:e.target.checked});return}
+  if(e.target.id==="imp"){const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!confirm("読み込むと今のデータが入れ変わるよ。いい?"))return;await act({op:"import",data})}catch(err){alert("JSONファイルが読めなかったよ")}}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id&&e.target.id.startsWith("sol-")){const id=e.target.id.slice(4);act({op:"solve",id,no:+document.querySelector('[data-s="'+id+'"]').dataset.no,text:e.target.value})}});
+pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input,select"))pull()},6000);
+</script></body></html>
