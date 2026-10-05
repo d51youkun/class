@@ -89,7 +89,7 @@ const canCheck=()=>!!PW||isTeacher;
 const activeItems=()=>S.items.filter(x=>!x.archived);
 async function api(b){
   try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW})});
-    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"mail";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true;
+    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true;
   }catch(e){if(e!=="net")throw e;online=false;throw"net"}
 }
 async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true}catch{online=false}render()}
@@ -97,7 +97,7 @@ async function act(b){if(checking)return;checking=true;try{await api(b);
   if(b.op==="check"){showNotify("チェック更新","チェック状態が更新されたよ");
     const t2=S.items.find(x=>x.id===b.id);
     if(b.v&&t2&&Object.keys(t2.checks).length===R.length){confetti();showNotify("🎉 全員達成！",t2.title+" みんなできたよ!")}}
-}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"送信に失敗したよ(先生に設定を確認してね)")}finally{checking=false}render()}
+}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":e==="bt"?"BlueTalkに送れなかったよ(先生の設定を確認してね)":"エラーが発生したよ")}finally{checking=false}render()}
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 function notNamesRich(it){const so=it.solutions||{};return R.map((n,i)=>({n,i})).filter(x=>!it.checks[x.i+1]).map(x=>(x.i+1)+". "+x.n+(so[x.i+1]?"（解決策: "+so[x.i+1]+"）":""))}
 function confetti(){const c=document.createElement("div");c.className="confetti";for(let i=0;i<70;i++){const s=document.createElement("i");s.style.left=Math.random()*100+"%";s.style.background=["#ff453a","#0a84ff","#30d158","#ffd60a","#ff9f0a","#bf5af2"][i%6];s.style.animationDelay=(Math.random()*.6)+"s";s.style.animationDuration=(2+Math.random()*1.5)+"s";c.appendChild(s)}document.body.appendChild(c);setTimeout(()=>c.remove(),4200)}
@@ -119,7 +119,7 @@ function card(it){
   const done=Object.keys(it.checks).length,p=Math.round(done/R.length*100),un=notNames(it);
   const lbl=it.type==="hw"?["提出済","未提出"]:["持った","忘れ"];
   let h=`<div class="card"><div class="row" data-o="${it.id}" style="cursor:pointer"><div class="grow"><b>${esc(it.title)}</b>${dueBadge(it)}
-   <div class="m">${it.assigned?"📅 出た日: "+it.assigned+"  | ":""}${it.due?"⏰ 期限: "+it.due+"  | ":""}${lbl[0]} ${done}/${R.length}${un.length?`  | <span class="ng">${lbl[1]} ${un.length}人</span>`:`  | <span class="ok">全員OK🎉</span>`}${it.notified?`  | ${it.via==="bluetalk"?"📮":"📧"}送信済`:""}</div></div><span>${open[it.id]?"▲":"▼"}</span></div>
+   <div class="m">${it.assigned?"📅 出た日: "+it.assigned+"  | ":""}${it.due?"⏰ 期限: "+it.due+"  | ":""}${lbl[0]} ${done}/${R.length}${un.length?`  | <span class="ng">${lbl[1]} ${un.length}人</span>`:`  | <span class="ok">全員OK🎉</span>`}${it.notified?"  | 📮送信済":""}</div></div><span>${open[it.id]?"▲":"▼"}</span></div>
    <div class="bar"><i style="width:${p}%"></i></div>`;
   if(open[it.id]){
     h+=`<div class="row" style="margin-top:12px"><label class="m"><input type="checkbox" id="only" ${only?"checked":""}> ${lbl[1]}だけ表示</label></div><div class="list">`;

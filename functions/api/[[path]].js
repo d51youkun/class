@@ -2,10 +2,7 @@
 const CONFIG = {
   PASSWORD: "6-2",
   TEACHER_PASSWORD: "6-2T",
-  TEACHER_EMAIL: "ここに先生のメールアドレス",
-  FROM_EMAIL: "onboarding@resend.dev",
-  RESEND_API_KEY: "",   // メールフォールバック用。空ならBlueTalkのみ
-  // ▼ 先生への通知を BlueTalk で届ける設定
+  // ▼ 先生への通知は BlueTalk のみ(メール機能は廃止)
   BLUETALK_SYNC: "https://bluechat-sync.by-youhei.workers.dev",
   BLUETALK_TEACHER: "",              // ← 先生のBlueTalk ユーザーIDを貼ると通知が届く
   BLUETALK_BOT: "classapp6-2bot",    // 通知を送るボットのID
@@ -15,7 +12,7 @@ const CONFIG = {
 const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-type':'application/json'}});
 export async function onRequest({request,env}){
   if(!env.STORE)return J({error:'kv'},500);
-  const C={PASSWORD:env.APP_PASSWORD||CONFIG.PASSWORD,TEACHER_PASSWORD:env.TEACHER_PASSWORD||CONFIG.TEACHER_PASSWORD,TEACHER:env.TEACHER_EMAIL||CONFIG.TEACHER_EMAIL,FROM:env.FROM_EMAIL||CONFIG.FROM_EMAIL,KEY:env.RESEND_API_KEY||CONFIG.RESEND_API_KEY,BTS:env.BLUETALK_SYNC||CONFIG.BLUETALK_SYNC,BTT:env.BLUETALK_TEACHER||CONFIG.BLUETALK_TEACHER,BTB:env.BLUETALK_BOT||CONFIG.BLUETALK_BOT,BTTOK:env.BLUETALK_TOKEN||CONFIG.BLUETALK_TOKEN};
+  const C={PASSWORD:env.APP_PASSWORD||CONFIG.PASSWORD,TEACHER_PASSWORD:env.TEACHER_PASSWORD||CONFIG.TEACHER_PASSWORD,BTS:env.BLUETALK_SYNC||CONFIG.BLUETALK_SYNC,BTT:env.BLUETALK_TEACHER||CONFIG.BLUETALK_TEACHER,BTB:env.BLUETALK_BOT||CONFIG.BLUETALK_BOT,BTTOK:env.BLUETALK_TOKEN||CONFIG.BLUETALK_TOKEN};
   const load=async()=>JSON.parse(await env.STORE.get('state')||'{"items":[]}');
   if(request.method==='GET')return J(await load());
   if(request.method!=='POST')return J({},405);
@@ -33,23 +30,15 @@ export async function onRequest({request,env}){
   if(b.op==='import'&&Array.isArray(b.data&&b.data.items))s.items=b.data.items.slice(0,500);
   if(b.op==='notify'&&it){
     const text=`【${it.title}】未完了(${b.names.length}人)\n`+b.names.join('\n');
-    let sent=false,via='';
-    if(C.BTS&&C.BTT){ // 1) BlueTalkへ投稿
-      const convId='classapp-'+C.BTT,h={'content-type':'application/json'};
-      if(C.BTTOK)h.Authorization='Bearer '+C.BTTOK;
-      try{
-        await fetch(C.BTS+'/api/conversations/'+convId,{method:'PUT',headers:h,body:JSON.stringify({id:convId,name:'📚 6年2組 提出チェック',members:[C.BTT,C.BTB],updatedAt:Date.now()})});
-        const r=await fetch(C.BTS+'/api/messages/'+convId+'/'+crypto.randomUUID(),{method:'PUT',headers:h,body:JSON.stringify({senderId:C.BTB,type:'text',text,ts:Date.now()})});
-        if(r.ok){sent=true;via='bluetalk'}
-      }catch(e){}
-    }
-    if(!sent&&C.KEY&&C.TEACHER){ // 2)BlueTalkが未設定/失敗ならメールへフォールバック
-      const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+C.KEY,'content-type':'application/json'},
-        body:JSON.stringify({from:C.FROM,to:[C.TEACHER],subject:`[6年2組] ${it.title} 未完了者`,text})});
-      if(r.ok){sent=true;via='mail'}
-    }
-    if(!sent)return J({error:'mail'},502);
-    it.notified=true;it.via=via;
+    if(!C.BTS||!C.BTT)return J({error:'bt'},502);
+    const convId='classapp-'+C.BTT,h={'content-type':'application/json'};
+    if(C.BTTOK)h.Authorization='Bearer '+C.BTTOK;
+    try{
+      const c=await fetch(C.BTS+'/api/conversations/'+convId,{method:'PUT',headers:h,body:JSON.stringify({id:convId,name:'📚 6年2組 提出チェック',members:[C.BTT,C.BTB],updatedAt:Date.now()})});
+      const m=await fetch(C.BTS+'/api/messages/'+convId+'/'+crypto.randomUUID(),{method:'PUT',headers:h,body:JSON.stringify({senderId:C.BTB,type:'text',text,ts:Date.now()})});
+      if(!c.ok||!m.ok)return J({error:'bt'},502);
+    }catch(e){return J({error:'bt'},502)}
+    it.notified=true;it.via='bluetalk';
   }
   await env.STORE.put('state',JSON.stringify(s));
   return J({...s,isTeacher});
