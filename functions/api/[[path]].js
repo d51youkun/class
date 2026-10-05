@@ -24,17 +24,19 @@ export async function onRequest({request,env}){
   if(b.op==='del')s.items=s.items.filter(x=>x.id!==b.id);
   if(b.op==='check'&&it){if(b.v){it.checks[b.no]=1;if(it.solutions)delete it.solutions[b.no];}else delete it.checks[b.no];}
   if(b.op==='solve'&&it){it.solutions=it.solutions||{};const t=String(b.text||'').slice(0,120).trim();if(t)it.solutions[b.no]=t;else delete it.solutions[b.no];}
-  if((b.op==='archive'||b.op==='restore'||b.op==='import')&&!isTeacher)return J({error:'teacher'},403);
+  if((b.op==='archive'||b.op==='restore'||b.op==='import'||b.op==='cfg')&&!isTeacher)return J({error:'teacher'},403);
+  if(b.op==='cfg')s.btTeacher=String(b.btTeacher||'').slice(0,64).trim();
   if(b.op==='archive'&&it)it.archived=Date.now();
   if(b.op==='restore'&&it)delete it.archived;
   if(b.op==='import'&&Array.isArray(b.data&&b.data.items))s.items=b.data.items.slice(0,500);
   if(b.op==='notify'&&it){
     const text=`【${it.title}】未完了(${b.names.length}人)\n`+b.names.join('\n');
-    if(!C.BTS||!C.BTT)return J({error:'bt'},502);
-    const convId='classapp-'+C.BTT,h={'content-type':'application/json'};
+    const TID=C.BTT||(s.btTeacher||'');
+    if(!C.BTS||!TID)return J({error:'bt'},502);
+    const convId='classapp-'+TID,h={'content-type':'application/json'};
     if(C.BTTOK)h.Authorization='Bearer '+C.BTTOK;
     try{
-      const c=await fetch(C.BTS+'/api/conversations/'+convId,{method:'PUT',headers:h,body:JSON.stringify({id:convId,name:'📚 6年2組 提出チェック',members:[C.BTT,C.BTB],updatedAt:Date.now()})});
+      const c=await fetch(C.BTS+'/api/conversations/'+convId,{method:'PUT',headers:h,body:JSON.stringify({id:convId,name:'📚 6年2組 提出チェック',members:[TID,C.BTB],updatedAt:Date.now()})});
       const m=await fetch(C.BTS+'/api/messages/'+convId+'/'+crypto.randomUUID(),{method:'PUT',headers:h,body:JSON.stringify({senderId:C.BTB,type:'text',text,ts:Date.now()})});
       if(!c.ok||!m.ok)return J({error:'bt'},502);
     }catch(e){return J({error:'bt'},502)}
