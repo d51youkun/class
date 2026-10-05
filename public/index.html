@@ -80,7 +80,7 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
-<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06A</footer>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06B</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
 let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0;
@@ -112,6 +112,13 @@ async function act(b){if(checking)return;checking=true;try{await api(b);
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 function notNamesRich(it){const so=it.solutions||{};return R.map((n,i)=>({n,i})).filter(x=>!it.checks[x.i+1]).map(x=>(x.i+1)+". "+x.n+(so[x.i+1]?"（解決策: "+so[x.i+1]+"）":""))}
 function confetti(){const c=document.createElement("div");c.className="confetti";for(let i=0;i<70;i++){const s=document.createElement("i");s.style.left=Math.random()*100+"%";s.style.background=["#ff453a","#0a84ff","#30d158","#ffd60a","#ff9f0a","#bf5af2"][i%6];s.style.animationDelay=(Math.random()*.6)+"s";s.style.animationDuration=(2+Math.random()*1.5)+"s";c.appendChild(s)}document.body.appendChild(c);setTimeout(()=>c.remove(),4200)}
+function csvEsc(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function dlCSV(rows,name){const blob=new Blob(["\uFEFF"+rows.map(r=>r.map(csvEsc).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function csvRows(all){const out=[["種類","項目","出た日","期限","出席番号","名前","状態","解決策"]];
+  for(const it of activeItems()){const tp=it.type==="hw"?"宿題":"持ち物",so=it.solutions||{};
+    R.forEach((n,i)=>{const c=!!it.checks[i+1];if(!all&&c)return;
+      out.push([tp,it.title,it.assigned||"",it.due||"",i+1,n,c?"提出済":"未提出",(!c&&so[i+1])?so[i+1]:""])})}
+  return out}
 function dueBadge(it){if(!it.due)return"";const t=new Date().toISOString().slice(0,10);if(it.due<t)return' <span class="badge bng">期限切れ</span>';if(it.due===t)return' <span class="badge bok">今日まで!</span>';const d=Math.round((new Date(it.due)-new Date(t))/864e5);return d>0?' <span class="badge bin">あと'+d+'日</span>':""}
 async function autoNotify(){ // 連携ページを開いている間、期限を過ぎたら自動送信
   if(!unlocked())return;const today=new Date().toISOString().slice(0,10);
@@ -213,6 +220,11 @@ function render(){
       <p>スマホ/iPadでブラウザの「ホーム画面に追加」をすると、アプリみたいに開けるよ</p>
     </div>
     <div class="guide-section">
+      <h3>📊 スプレッドシートで管理</h3>
+      <p>「連携」タブの「📊 未提出だけCSV」を押すと、未提出の子の一覧（解決策つき）をファイル保存できる</p>
+      <p>そのファイルをGoogleスプレッドシートやExcelに読み込めば、並び替え・色付け・印刷が自由自在。「📋 全員のCSV」は提出済も含めた全部入り</p>
+    </div>
+    <div class="guide-section">
       <h3>💾 データのバックアップ（先生）</h3>
       <p>「連携」タブの「⬇️ 書き出し」でデータをファイルに保存できる</p>
       <p>「📤 読み込み」で保存したファイルに戻せるよ（先生だけ）</p>
@@ -243,7 +255,7 @@ function render(){
     <input type="date" id="as" placeholder="出た日">
     <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
     <div class="card"><div class="m">${isTeacher?"先生モード（アーカイブ・バックアップができるよ）":"期限を過ぎた宿題は、このページを開いている間に未提出者が先生へ自動送信されるよ。"}</div>
-    <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button>${isTeacher?'<button class="btn g" id="exp">⬇️ 書き出し</button><label class="btn g" style="cursor:pointer">📤 読み込み<input type="file" id="imp" accept=".json,application/json" style="display:none"></label>':""}</div></div>`+activeItems().map(card).join("");
+    <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button>${isTeacher?'<button class="btn g" id="exp">⬇️ 書き出し</button><label class="btn g" style="cursor:pointer">📤 読み込み<input type="file" id="imp" accept=".json,application/json" style="display:none"></label><button class="btn" id="csvN">📊 未提出だけCSV</button><button class="btn g" id="csvA">📋 全員のCSV</button>':""}</div></div>`+activeItems().map(card).join("");
   }
   else{const l=activeItems().filter(x=>x.type===tab).sort((a,b)=>(a.due||"9999-12-31").localeCompare(b.due||"9999-12-31"));if(canCheck()&&l.length>1){h+=`<div class="card"><b>🙋 個人チェック</b><div class="m">出席番号を入れて「表示」→ その子の項目をひとつずつチェックできるよ。忘れたときは解決策も書ける！</div><div class="number-input" style="margin-top:8px"><input type="number" id="persNoIn" placeholder="番号" min="1" max="${R.length}" value="${persNo||""}"><button class="btn" id="persGo">表示</button>${persNo?'<button class="btn g" id="persAll">⚡ 全部チェック</button>':""}</div>${persPanel()}</div>`;h+=`<div class="card"><b>⚡ 一括チェック</b><div class="m">その番号の全項目をまとめてチェックするよ</div><div class="number-input" style="margin-top:8px"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="${R.length}"><button class="btn" id="quickCheck">一括チェック</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
   $("#app").innerHTML=h;
@@ -257,6 +269,7 @@ document.addEventListener("click",async e=>{
   else if(t.id==="lock"){PW="";sessionStorage.pw="";isTeacher=false;render()}
   else if(t.id==="notify"){requestNotify()}
   else if(t.id==="btsave"){await act({op:"cfg",btTeacher:$("#btid").value.trim()});alert("保存したよ")}
+  else if(t.id==="csvN"||t.id==="csvA"){const all=t.id==="csvA";dlCSV(csvRows(all),(all?"全員一覧":"未提出一覧")+"-"+new Date().toISOString().slice(0,10)+".csv")}
   else if(t.id==="exp"){const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="classapp-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(a.href)}
   else if(d.s){const inp=$("#sol-"+d.s);if(inp)act({op:"solve",id:d.s,no:+d.no,text:inp.value})}
   else if(t.id==="add"){const ti=$("#ti").value.trim();if(!ti)return alert("名前を入れてね");await act({op:"add",type:$("#ty").value,title:ti,assigned:$("#as").value,due:$("#du").value});tab=$("#ty")?.value||tab}
