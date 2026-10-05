@@ -80,7 +80,7 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
-<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-05C</footer>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-05D</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
 let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0;
@@ -108,7 +108,7 @@ function handleEvents(s){
 async function act(b){if(checking)return;checking=true;try{await api(b);
   if(b.op==="check"){const t2=S.items.find(x=>x.id===b.id);
     if(b.v&&t2&&Object.keys(t2.checks).length===R.length){confetti();showNotify("🎉 全員達成！",t2.title+" みんなできたよ!")}}
-}catch(e){alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":e==="bt"?"BlueTalkに送れなかったよ(先生の設定を確認してね)":"エラーが発生したよ")}finally{checking=false}render()}
+}catch(e){if(e!=="bt")alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは先生だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"エラーが発生したよ")}finally{checking=false}render()}
 function notNames(it){return R.filter((_,i)=>!it.checks[i+1])}
 function notNamesRich(it){const so=it.solutions||{};return R.map((n,i)=>({n,i})).filter(x=>!it.checks[x.i+1]).map(x=>(x.i+1)+". "+x.n+(so[x.i+1]?"（解決策: "+so[x.i+1]+"）":""))}
 function confetti(){const c=document.createElement("div");c.className="confetti";for(let i=0;i<70;i++){const s=document.createElement("i");s.style.left=Math.random()*100+"%";s.style.background=["#ff453a","#0a84ff","#30d158","#ffd60a","#ff9f0a","#bf5af2"][i%6];s.style.animationDelay=(Math.random()*.6)+"s";s.style.animationDuration=(2+Math.random()*1.5)+"s";c.appendChild(s)}document.body.appendChild(c);setTimeout(()=>c.remove(),4200)}
