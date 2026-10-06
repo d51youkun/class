@@ -9,7 +9,7 @@ const CONFIG = {
   BLUETALK_TOKEN: ""                 // syncサーバーで認証を有効化している時だけ
 };
 // ================================================================
-const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-type':'application/json'}});
+const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-type':'application/json','cache-control':'no-store, max-age=0'}});
 export async function onRequest({request,env}){
   if(!env.STORE)return J({error:'kv'},500);
   const C={PASSWORD:env.APP_PASSWORD||CONFIG.PASSWORD,TEACHER_PASSWORD:env.TEACHER_PASSWORD||CONFIG.TEACHER_PASSWORD,BTS:env.BLUETALK_SYNC||CONFIG.BLUETALK_SYNC,BTT:env.BLUETALK_TEACHER||CONFIG.BLUETALK_TEACHER,BTB:env.BLUETALK_BOT||CONFIG.BLUETALK_BOT,BTTOK:env.BLUETALK_TOKEN||CONFIG.BLUETALK_TOKEN};
