@@ -90,10 +90,10 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
-<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06F</footer>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06G</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0,btVisible=false;
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0,btVisible=false,lastRev=0;
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 if(localStorage.getItem("btdark")==="1")document.body.classList.add("dark");
 const unlocked=()=>!!PW;
@@ -103,14 +103,20 @@ const STN={done:"やった",forgot:"忘れた",absent:"欠席",unsure:"まだわ
 const stOf=v=>v===1||v===true?"done":STS.some(x=>x[0]===v)?v:"";
 const doneCnt=it=>Object.values(it.checks||{}).filter(v=>stOf(v)==="done").length;
 const activeItems=()=>S.items.filter(x=>!x.archived);
+function applyState(res){
+  if(!res||typeof res!=="object")return;
+  isTeacher=res.isTeacher||false;online=true;
+  if((res.rev||0)>=(lastRev||0)){S=res;lastRev=res.rev||0}
+  handleEvents(res);
+}
 async function api(b){
   const ac="AbortController"in window?new AbortController():null;
   const tm=ac?setTimeout(()=>ac.abort(),10000):0;
   try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW}),signal:ac?ac.signal:undefined});
-    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true; handleEvents(res);
+    if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; applyState(await r.json());
   }catch(e){if(e&&e.name==="AbortError")e="net";if(e!=="net")throw e;online=false;throw"net"}finally{if(tm)clearTimeout(tm)}
 }
-async function pull(){try{const r=await fetch("/api/x"+(PW?"?pass="+encodeURIComponent(PW):""));if(!r.ok)throw 0;S=await r.json();online=true;isTeacher=!!S.isTeacher;handleEvents(S)}catch{online=false}render()}
+async function pull(){try{const r=await fetch("/api/x"+(PW?"?pass="+encodeURIComponent(PW):""));if(!r.ok)throw 0;applyState(await r.json())}catch{online=false}render()}
 function handleEvents(s){
   if(!s||typeof s!=="object")return;
   if(!booted){booted=true;lastEvTs=s.lastEvent?s.lastEvent.ts:0;return}
@@ -121,7 +127,9 @@ function handleEvents(s){
     if("Notification"in window&&Notification.permission==="granted")new Notification("📚 6-2チェック",{body:msg});
   }
 }
-async function act(b){if(checking)return;checking=true;try{await api(b);
+let actQ=Promise.resolve();
+function act(b){const p=actQ.then(()=>doAct(b));actQ=p.catch(()=>{});return p}
+async function doAct(b){checking=true;try{await api(b);
   if(b.op==="check"){const t2=S.items.find(x=>x.id===b.id);
     if(b.v==="done"&&t2&&doneCnt(t2)===R.length){confetti();showNotify("🎉 全員達成！",t2.title+" みんなできたよ!")}}
 }catch(e){if(e!=="bt")alert(e==="pw"?"パスワードが違うよ":e==="tonly"?"それは管理者ログインした人だけができるよ":e==="kv"?"保存先(KV)が未設定だよ":e==="net"?"サーバーにつながらないよ":"エラーが発生したよ")}finally{checking=false}render()}
@@ -182,7 +190,7 @@ function persPanel(){
   return h+"</div>";
 }
 function render(){
-  $("#st").textContent=online?"🟢 同期中":"🔴 未接続";
+  $("#st").textContent=(online?"🟢 同期中":"🔴 未接続")+(isTeacher?"・管理者✍️":"");
   $("#dm").textContent=document.body.classList.contains("dark")?"☀️":"🌙";
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
   let h="";
@@ -316,9 +324,11 @@ document.addEventListener("click",async e=>{
 });
 document.addEventListener("change",async e=>{
   const c=e.target.dataset.c;
-  if(c){if(!canCheck())return;const[id,no]=c.split("|");act({op:"check",id,no:+no,v:e.target.value||false});return}
+  if(c){if(!canCheck())return;const[id,no]=c.split("|");const v=e.target.value||false;const it=S.items.find(x=>x.id===id);
+    if(it){if(v&&STS.some(s=>s[0]===v))it.checks[no]=v;else delete it.checks[no];if(v==="done"&&it.solutions)delete it.solutions[no];render()}
+    act({op:"check",id,no:+no,v});return}
   if(e.target.id==="imp"){const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!confirm("読み込むと今のデータが入れ変わるよ。いい?"))return;await act({op:"import",data})}catch(err){alert("JSONファイルが読めなかったよ")}}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id&&e.target.id.startsWith("sol-")){const id=e.target.id.slice(4);act({op:"solve",id,no:+document.querySelector('[data-s="'+id+'"]').dataset.no,text:e.target.value})}});
-pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input,select"))pull()},6000);
+pull();setInterval(()=>{if(!document.hidden&&!document.activeElement?.matches("input,select")&&!checking)pull()},6000);
 </script></body></html>
