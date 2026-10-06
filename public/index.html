@@ -90,10 +90,10 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
-<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06G</footer>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06H</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
-let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0,btVisible=false,lastRev=0;
+let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0,btVisible=false,lastRev=0,ROLE="";
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 if(localStorage.getItem("btdark")==="1")document.body.classList.add("dark");
 const unlocked=()=>!!PW;
@@ -105,7 +105,7 @@ const doneCnt=it=>Object.values(it.checks||{}).filter(v=>stOf(v)==="done").lengt
 const activeItems=()=>S.items.filter(x=>!x.archived);
 function applyState(res){
   if(!res||typeof res!=="object")return;
-  isTeacher=res.isTeacher||false;online=true;
+  isTeacher=res.isTeacher||false;ROLE=res.role||"";online=true;
   if((res.rev||0)>=(lastRev||0)){S=res;lastRev=res.rev||0}
   handleEvents(res);
 }
@@ -168,7 +168,7 @@ function card(it){
     R.forEach((n,i)=>{const st=stOf(it.checks[i+1]);if(only&&st==="done")return;
       const so=it.solutions&&it.solutions[i+1];
       h+=`<label class="vcol ${st}" ${so?`title="解決策: ${esc(so)}"`:""}><span class="nm">${i+1}. ${n}${so?' <span class="solmark">💬</span>':""}</span><select class="stsel" data-c="${it.id}|${i+1}" ${canCheck()?"":"disabled"}><option value="">— えらんでね —</option>${STS.map(x=>`<option value="${x[0]}"${st===x[0]?" selected":""}>${x[1]}</option>`).join("")}</select></label>`});
-    h+=`</div>${canCheck()?"":`<div class="m" style="margin-top:12px">🔒 ${unlocked()?"いま「みんなのパスワード」で入ってるから記入できないよ。一度ログアウトして、管理者パスワードで入れ直してね":"記入は連携ページで管理者ログインした人だけできるよ"}</div>`}`;
+    h+=`</div>${canCheck()?"":'<div class="m" style="margin-top:12px">🔒 記入は「連携」でログインした人（管理者・先生）だけだよ。見るだけならパスワードはいらないよ</div>'}`;
     if(canCheck())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📮 BlueTalkで${lbl[1]}を送る</button><button class="btn g" data-a="${it.id}">🗄 アーカイブ</button><button class="btn r" data-d="${it.id}">削除</button></div>`;
   }
   return h+"</div>";
@@ -177,7 +177,7 @@ function archCard(it){
   const done=doneCnt(it),tp=it.type==="hw"?"📚 宿題":"🎒 持ち物";
   return `<div class="card"><div class="row"><div class="grow"><b>${esc(it.title)}</b>${dueBadge(it)}
    <div class="m">${tp}${it.assigned?"  | 📅 出た日: "+it.assigned:""}${it.due?"  | ⏰ 期限: "+it.due:""}  | <span class="ok">✅ ${done}/${R.length}</span></div></div></div>
-   ${canCheck()?`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-r="${it.id}">↩️ もどす</button><button class="btn r" data-d="${it.id}">完全に削除</button></div>`:`<div class="m" style="margin-top:8px">🔒 ${unlocked()?"もどす・削除は管理者パスワードでログインした人だけできるよ":"もどす・削除には連携ページでログインしてね"}</div>`}</div>`;
+   ${canCheck()?`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-r="${it.id}">↩️ もどす</button><button class="btn r" data-d="${it.id}">完全に削除</button></div>`:`<div class="m" style="margin-top:8px">🔒 もどす・削除は「連携」でログインした人だけできるよ</div>`}</div>`;
 }
 function persPanel(){
   if(!persNo)return"";
@@ -190,12 +190,11 @@ function persPanel(){
   return h+"</div>";
 }
 function render(){
-  $("#st").textContent=(online?"🟢 同期中":"🔴 未接続")+(isTeacher?"・管理者✍️":"");
+  $("#st").textContent=(online?"🟢 同期中":"🔴 未接続")+(isTeacher?(ROLE==="teacher"?"・先生✍️":"・管理者✍️"):"");
   $("#dm").textContent=document.body.classList.contains("dark")?"☀️":"🌙";
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
   let h="";
-  if(tab==="guide"&&!unlocked())h=`<div class="card"><b>🔒 説明書</b><p class="m">説明書を見るには「連携」でログインしてね</p></div>`;
-  else if(tab==="guide")h=`<div class="card"><b>📖 使い方の説明書（やさしい言葉で書いたよ）</b>
+  if(tab==="guide")h=`<div class="card"><b>📖 使い方の説明書（やさしい言葉で書いたよ）</b>
     <p class="m">📸 写真は前の画面のものだよ。ボタンの見た目は今は新しくなってるけど、場所は同じだよ</p>
     <div class="guide-section">
       <h3>🧾 このアプリはなにをするもの？</h3>
@@ -208,7 +207,7 @@ function render(){
       <p>😅 <b>忘れた</b> … やるのを忘れちゃった。下に出る「解決策」に、これからどうするか書いておこう（例: 明日必ず持ってくる）</p>
       <p>🏠 <b>欠席</b> … 学校を休んでいて、できなかった</p>
       <p>🤔 <b>まだわからない</b> … やり方や意味がわからなくて、できていない。わからないところを解決策に書いておくと、教えてもらいやすくなるよ</p>
-      <p>🔒 記入できるのは<b>管理者ログインした人だけ</b>。それ以外の人は見るだけだよ</p>
+      <p>🔒 記入できるのは<b>管理者か先生</b>だけ。みんなはパスワードなしで見られるよ</p>
       <p>みんなが「やった」になると、紙ふぶき🎉が出るよ</p>
     </div>
     <div class="guide-section">
@@ -273,7 +272,7 @@ function render(){
     h=`<div class="card"><b>🗂 アーカイブ</b><p class="m">おわった宿題などをしまっておく場所。しまっても消えないよ、ログインしてれば誰でももどせる。</p></div>`;
     h+=a.length?a.map(archCard).join(""):'<div class="card m">アーカイブはまだないよ。</div>';
   }
-  else if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">パスワードを入れてログインしてね</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
+  else if(tab==="admin"&&!unlocked())h=`<div class="card"><b>🔒 連携ページ</b><p class="m">宿題や持ち物を記入する人はパスワードを入れてログインしてね</p><p class="m">見るだけならパスワードはいらないよ（宿題・持ち物・アーカイブ・説明書はそのまま見られるよ）</p><div class="row"><input type="password" id="pw" placeholder="パスワード"><button class="btn" id="go">ログイン</button></div></div>`;
   else if(tab==="admin"){
     if(unlocked()){const hw=activeItems().filter(x=>x.type==="hw"),br=activeItems().filter(x=>x.type==="bring");
       const hwTotal=hw.reduce((s,it)=>s+doneCnt(it),0),brTotal=br.reduce((s,it)=>s+doneCnt(it),0);
@@ -286,14 +285,13 @@ function render(){
         <div class="summary-item"><b>${brTotal}</b><span>持ち物OK（合計）</span></div>
       </div></div>`;
     }
-    if(unlocked()&&!isTeacher)h+=`<div class="card" style="border-color:rgba(255,159,10,.55)"><b>👀 いま「みんなのパスワード」でログイン中</b><div class="m">このページは見られるけど、宿題の記入（やった・忘れた・欠席・まだわからない）は<b>管理者パスワード</b>で入った人だけできるよ。下の「ログアウト」を押してから、管理者パスワードで入り直してね。</div></div>`;
     if(unlocked()&&btVisible)h+=`<div class="card"><b>📮 BlueTalk通知の設定</b><div class="m">先生のBlueTalkユーザーIDを入れて「保存」してね（BlueTalkのプロフィール画面で確認できる）。保存すると未提出通知が先生のBlueTalkに届くようになるよ</div><div class="row" style="margin-top:8px;gap:8px"><input type="text" id="btid" placeholder="BlueTalkのユーザーID" value="${esc(S.btTeacher||"")}"><button class="btn" id="btsave">保存</button></div></div>`;
     h+=`<div class="card"><b>➕ 新しく作る</b><div style="display:grid;gap:12px;margin-top:12px">
     <select id="ty"><option value="hw">宿題</option><option value="bring">持ち物</option></select>
     <input type="text" id="ti" placeholder="名前（例:漢字ドリル p.20）" maxlength="60">
     <input type="date" id="as" placeholder="出た日">
     <input type="date" id="du" placeholder="期限"><button class="btn" id="add">作成</button></div></div>
-    <div class="card"><div class="m">${isTeacher?"管理者ログイン中 ✓ 記入ができるよ":"ログイン中（記入できるのは管理者ログインした人だけだよ）。"}期限を過ぎた宿題は、このページを開いている間にまだの子が先生へ自動送信されるよ。アーカイブ・CSV・バックアップも使える。</div>
+    <div class="card"><div class="m">${isTeacher?(ROLE==="teacher"?"先生ログイン中 ✓ 記入ができるよ":"管理者ログイン中 ✓ 記入ができるよ"):"ログイン中。"}期限を過ぎた宿題は、このページを開いている間にまだの子が先生へ自動送信されるよ。アーカイブ・CSV・バックアップも使える。</div>
     <div class="row" style="margin-top:12px;gap:8px"><button class="btn g" id="lock">ログアウト</button><button class="btn" id="notify">🔔 通知</button>${unlocked()?'<button class="btn g" id="exp">⬇️ 書き出し</button><label class="btn g" style="cursor:pointer">📤 読み込み<input type="file" id="imp" accept=".json,application/json" style="display:none"></label><button class="btn" id="csvN">📊 未提出だけCSV</button><button class="btn g" id="csvA">📋 全員のCSV</button>':""}</div></div>`+activeItems().map(card).join("");
   }
   else{const l=activeItems().filter(x=>x.type===tab).sort((a,b)=>(a.due||"9999-12-31").localeCompare(b.due||"9999-12-31"));if(canCheck()&&l.length>1){h+=`<div class="card"><b>🙋 個人チェック</b><div class="m">出席番号を入れて「表示」→ その子の全項目を記入できるよ。「忘れた」「まだわからない」は解決策も書ける！</div><div class="number-input" style="margin-top:8px"><input type="number" id="persNoIn" placeholder="番号" min="1" max="${R.length}" value="${persNo||""}"><button class="btn" id="persGo">表示</button>${persNo?'<button class="btn g" id="persAll">⚡ 全部「やった」にする</button>':""}</div>${persPanel()}</div>`;h+=`<div class="card"><b>⚡ まとめて「やった」にする</b><div class="m">その番号の全項目を、まとめて「やった」にするよ</div><div class="number-input" style="margin-top:8px"><input type="number" id="quickNo" placeholder="出席番号" min="1" max="${R.length}"><button class="btn" id="quickCheck">まとめてやった</button></div></div>`}h+=l.length?l.map(card).join(""):'<div class="card m">まだ何もないよ。連携ページから作ってね。</div>'}
