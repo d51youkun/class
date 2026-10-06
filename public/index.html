@@ -90,7 +90,7 @@ body.dark .pitem{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,
 <header>📚 6年2組 提出・持ち物チェック <button id="dm" class="chip" title="ダークモード">🌙</button> <span id="st" class="chip"></span></header>
 <nav><button data-t="hw">宿題</button><button data-t="bring">持ち物</button><button data-t="arch">🗂 アーカイブ</button><button data-t="guide">📖 説明書</button><button data-t="admin">連携 🔒</button></nav>
 <main id="app"></main>
-<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06E</footer>
+<footer style="text-align:center;color:var(--m);font-size:12px;padding:6px 0 18px">6-2チェック ver 2026-10-06F</footer>
 <script>
 const R="明星 月子,安藤 駈,石井 晴翔,石田 るの,大内 龍斗,大河内 陽太,大鳥 新,岡田 瑠奈,小川 紗輝斗,片谷 美月,川名 挙信,菅野 悠乃,熊澤 夏芭,栗林 柚羽,小金 志穂,小髙 楓,小谷 蓮,鎮目 なつみ,菅田 そら,鈴木 叶乃,鈴木 孝明,鈴木 結菜,鈴木 悠太,関 茉柚莉,中村 真尋,中村 優乃,夏村 洋平,野倉 詩織,早川 譲治,三平 匡人,宮本 明莉,村田 優樹,八巻 凛奈,渡邉 駿一".split(","); // index+1 = 出席番号
 let S={items:[]},tab="hw",PW=sessionStorage.pw||"",online=false,only=false,open={},isTeacher=false,notifyEnabled=false,checking=false,persNo=0,booted=false,lastEvTs=0,btVisible=false;
@@ -104,11 +104,13 @@ const stOf=v=>v===1||v===true?"done":STS.some(x=>x[0]===v)?v:"";
 const doneCnt=it=>Object.values(it.checks||{}).filter(v=>stOf(v)==="done").length;
 const activeItems=()=>S.items.filter(x=>!x.archived);
 async function api(b){
-  try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW})});
+  const ac="AbortController"in window?new AbortController():null;
+  const tm=ac?setTimeout(()=>ac.abort(),10000):0;
+  try{const r=await fetch("/api/x",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,pass:PW}),signal:ac?ac.signal:undefined});
     if(r.status===401)throw"pw"; if(r.status===403)throw"tonly"; if(r.status===502)throw"bt";if(r.status===500)throw"kv"; if(!r.ok)throw"net"; const res=await r.json(); S=res; isTeacher=res.isTeacher||false; online=true; handleEvents(res);
-  }catch(e){if(e!=="net")throw e;online=false;throw"net"}
+  }catch(e){if(e&&e.name==="AbortError")e="net";if(e!=="net")throw e;online=false;throw"net"}finally{if(tm)clearTimeout(tm)}
 }
-async function pull(){try{const r=await fetch("/api/x");if(!r.ok)throw 0;S=await r.json();online=true;handleEvents(S)}catch{online=false}render()}
+async function pull(){try{const r=await fetch("/api/x"+(PW?"?pass="+encodeURIComponent(PW):""));if(!r.ok)throw 0;S=await r.json();online=true;isTeacher=!!S.isTeacher;handleEvents(S)}catch{online=false}render()}
 function handleEvents(s){
   if(!s||typeof s!=="object")return;
   if(!booted){booted=true;lastEvTs=s.lastEvent?s.lastEvent.ts:0;return}
@@ -158,7 +160,7 @@ function card(it){
     R.forEach((n,i)=>{const st=stOf(it.checks[i+1]);if(only&&st==="done")return;
       const so=it.solutions&&it.solutions[i+1];
       h+=`<label class="vcol ${st}" ${so?`title="解決策: ${esc(so)}"`:""}><span class="nm">${i+1}. ${n}${so?' <span class="solmark">💬</span>':""}</span><select class="stsel" data-c="${it.id}|${i+1}" ${canCheck()?"":"disabled"}><option value="">— えらんでね —</option>${STS.map(x=>`<option value="${x[0]}"${st===x[0]?" selected":""}>${x[1]}</option>`).join("")}</select></label>`});
-    h+=`</div>${canCheck()?"":'<div class="m" style="margin-top:12px">🔒 記入は「管理者ログイン」した人だけできるよ</div>'}`;
+    h+=`</div>${canCheck()?"":`<div class="m" style="margin-top:12px">🔒 ${unlocked()?"いま「みんなのパスワード」で入ってるから記入できないよ。一度ログアウトして、管理者パスワードで入れ直してね":"記入は連携ページで管理者ログインした人だけできるよ"}</div>`}`;
     if(canCheck())h+=`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-n="${it.id}" ${un.length?"":"disabled"}>📮 BlueTalkで${lbl[1]}を送る</button><button class="btn g" data-a="${it.id}">🗄 アーカイブ</button><button class="btn r" data-d="${it.id}">削除</button></div>`;
   }
   return h+"</div>";
@@ -167,7 +169,7 @@ function archCard(it){
   const done=doneCnt(it),tp=it.type==="hw"?"📚 宿題":"🎒 持ち物";
   return `<div class="card"><div class="row"><div class="grow"><b>${esc(it.title)}</b>${dueBadge(it)}
    <div class="m">${tp}${it.assigned?"  | 📅 出た日: "+it.assigned:""}${it.due?"  | ⏰ 期限: "+it.due:""}  | <span class="ok">✅ ${done}/${R.length}</span></div></div></div>
-   ${canCheck()?`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-r="${it.id}">↩️ もどす</button><button class="btn r" data-d="${it.id}">完全に削除</button></div>`:'<div class="m" style="margin-top:8px">🔒 もどす・削除には「連携」でログインしてね</div>'}</div>`;
+   ${canCheck()?`<div class="row" style="margin-top:12px;gap:8px"><button class="btn" data-r="${it.id}">↩️ もどす</button><button class="btn r" data-d="${it.id}">完全に削除</button></div>`:`<div class="m" style="margin-top:8px">🔒 ${unlocked()?"もどす・削除は管理者パスワードでログインした人だけできるよ":"もどす・削除には連携ページでログインしてね"}</div>`}</div>`;
 }
 function persPanel(){
   if(!persNo)return"";
@@ -276,6 +278,7 @@ function render(){
         <div class="summary-item"><b>${brTotal}</b><span>持ち物OK（合計）</span></div>
       </div></div>`;
     }
+    if(unlocked()&&!isTeacher)h+=`<div class="card" style="border-color:rgba(255,159,10,.55)"><b>👀 いま「みんなのパスワード」でログイン中</b><div class="m">このページは見られるけど、宿題の記入（やった・忘れた・欠席・まだわからない）は<b>管理者パスワード</b>で入った人だけできるよ。下の「ログアウト」を押してから、管理者パスワードで入り直してね。</div></div>`;
     if(unlocked()&&btVisible)h+=`<div class="card"><b>📮 BlueTalk通知の設定</b><div class="m">先生のBlueTalkユーザーIDを入れて「保存」してね（BlueTalkのプロフィール画面で確認できる）。保存すると未提出通知が先生のBlueTalkに届くようになるよ</div><div class="row" style="margin-top:8px;gap:8px"><input type="text" id="btid" placeholder="BlueTalkのユーザーID" value="${esc(S.btTeacher||"")}"><button class="btn" id="btsave">保存</button></div></div>`;
     h+=`<div class="card"><b>➕ 新しく作る</b><div style="display:grid;gap:12px;margin-top:12px">
     <select id="ty"><option value="hw">宿題</option><option value="bring">持ち物</option></select>

@@ -14,7 +14,7 @@ export async function onRequest({request,env}){
   if(!env.STORE)return J({error:'kv'},500);
   const C={PASSWORD:env.APP_PASSWORD||CONFIG.PASSWORD,TEACHER_PASSWORD:env.TEACHER_PASSWORD||CONFIG.TEACHER_PASSWORD,BTS:env.BLUETALK_SYNC||CONFIG.BLUETALK_SYNC,BTT:env.BLUETALK_TEACHER||CONFIG.BLUETALK_TEACHER,BTB:env.BLUETALK_BOT||CONFIG.BLUETALK_BOT,BTTOK:env.BLUETALK_TOKEN||CONFIG.BLUETALK_TOKEN};
   const load=async()=>JSON.parse(await env.STORE.get('state')||'{"items":[]}');
-  if(request.method==='GET')return J(await load());
+  if(request.method==='GET'){const u=new URL(request.url);const s=await load();return J({...s,isTeacher:u.searchParams.get('pass')===C.TEACHER_PASSWORD});}
   if(request.method!=='POST')return J({},405);
   const b=await request.json();
   const isTeacher=b.pass===C.TEACHER_PASSWORD;
